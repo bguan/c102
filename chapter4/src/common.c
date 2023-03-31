@@ -71,32 +71,11 @@ LEN_STR_ARRAY *append_len_str_array(LEN_STR_ARRAY *lsa, char *new_str)
     }
     else if (lsa->len >= lsa->allocated)
     {
-        char *entry0_pre_realloc = lsa->strs[0];
-        if (entry0_pre_realloc == NULL)
-        {
-            fprintf(stderr, "LEN_STR_ARRAY 1st entry is NULL before reallocation while inserting %s, abort!\n", new_str);
-            exit(1);
-        }
-
         lsa->allocated = ARRAY_GROWTH_FACTOR * lsa->allocated;
         lsa->strs = (char **)realloc(lsa->strs, lsa->allocated * sizeof(char *));
         if (lsa->strs == NULL)
         {
             fprintf(stderr, "Failed to reallocate memory to append %s to LEN_STR_ARRAY, abort!\n", new_str);
-            exit(1);
-        }
-
-        char *entry0_post_realloc = lsa->strs[0];
-        if (entry0_post_realloc ==  NULL)
-        {
-            fprintf(stderr, "LEN_STR_ARRAY 1st entry is NULL after reallocation while inserting %s, abort!\n", new_str);
-            exit(1);
-        }
-
-        if (strncmp(entry0_pre_realloc, entry0_post_realloc, MAX_STR_LEN) != 0)
-        {
-            fprintf(stderr, "LEN_STR_ARRAY 1st entry was %s, now %s after reallocation while inserting %s, abort!\n",
-                    entry0_pre_realloc, entry0_post_realloc, new_str);
             exit(1);
         }
     }

@@ -13,7 +13,7 @@ LEN_STR_ARRAY* find_txt_files_in_dir(char *dir_path, int max_files);
 #define MAX_NUM_WORDS 1000
 #define MAX_LINE_LEN 1000L
 #define TXT_SUFFIX "txt"
-#define TOK_DELIM "0123456789`~@#$%^&*()-_=+[{]}\\|;:'\",<.>/?] \t\n\r"
+#define TOK_DELIM "0123456789`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?] \t\n\r"
 
 /* Data structure holding processing results of each file */
 typedef struct {
