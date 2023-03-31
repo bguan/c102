@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "common.h": "c",
+        "common.c": "c",
+        "file_utils.h": "c",
+        "file_utils.c": "c",
+        "process.c": "c",
+        "cstdlib": "c",
+        "locale": "c",
+        "ostream": "c"
+    },
+    "cmake.configureOnOpen": false
+}
