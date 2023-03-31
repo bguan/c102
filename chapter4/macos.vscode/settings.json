@@ -4,10 +4,7 @@
         "common.c": "c",
         "file_utils.h": "c",
         "file_utils.c": "c",
-        "process.c": "c",
-        "cstdlib": "c",
-        "locale": "c",
-        "ostream": "c"
+        "process.c": "c"
     },
     "cmake.configureOnOpen": false
 }
