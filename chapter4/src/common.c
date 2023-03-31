@@ -8,16 +8,16 @@
 /* copy & convert all chars in word to lowercase using ctype.h */
 char *dup_lower(const char *word)
 {
-    char *new_word = (char *)malloc(strnlen(word, MAX_WORD_LEN));
-    if (new_word == NULL) {
-        fprintf(stderr, "Error allocating memory to copy string: %s, abort!\n", word);
+    char *w = strndup(word, MAX_STR_LEN);
+    if (w == NULL) {
+        fprintf(stderr, "Error duplicating string: %s, abort!\n", word);
         exit(1);
     }
-    for (int i = 0; word[i]; i++)
+    for (int i = 0; w[i]; i++)
     {
-        new_word[i] = isascii(word[i]) ? tolower(word[i]) : '?';
+        w[i] = isascii(w[i]) ? tolower(w[i]) : '?';
     }
-    return new_word;
+    return w;
 }
 
 /* return if new_str is found in strings, up to max entries */
@@ -43,7 +43,7 @@ bool is_in(char **strings, char *new_str, int max_entries)
 LEN_STR_ARRAY *init_len_str_array()
 {
     size_t lsa_size = sizeof(LEN_STR_ARRAY);
-    LEN_STR_ARRAY *lsa = (LEN_STR_ARRAY *)malloc(lsa_size);
+    LEN_STR_ARRAY *lsa = malloc(lsa_size);
     if (lsa == NULL)
     {
         fprintf(stderr, "Failed to allocate memory of size %ld for LEN_STR_ARRAY, abort!\n", lsa_size);
@@ -61,7 +61,7 @@ LEN_STR_ARRAY *append_len_str_array(LEN_STR_ARRAY *lsa, char *new_str)
 {
     if (lsa->allocated == 0)
     {
-        lsa->strs = (char **)malloc(ARRAY_GROWTH_FACTOR *sizeof(char *));
+        lsa->strs = malloc(ARRAY_GROWTH_FACTOR *sizeof(char *));
         if (lsa->strs == NULL)
         {
             fprintf(stderr, "Failed to allocate memory to append %s to LEN_STR_ARRAY, abort!\n", new_str);
@@ -101,14 +101,13 @@ LEN_STR_ARRAY *append_len_str_array(LEN_STR_ARRAY *lsa, char *new_str)
         }
     }
 
-    char *new_str_cpy = (char *)malloc(strnlen(new_str, MAX_STR_LEN) + 1);
+    char *new_str_cpy = strndup(new_str, MAX_STR_LEN);
     if (new_str_cpy == NULL)
     {
-        fprintf(stderr, "Failed to allocate memory to copy %s, abort!\n", new_str);
+        fprintf(stderr, "Failed to duplicate %s, abort!\n", new_str);
         exit(1);
     }
 
-    strncpy(new_str_cpy, new_str, MAX_WORD_LEN);
     lsa->strs[lsa->len] = new_str_cpy;
     lsa->len++;
 
@@ -141,9 +140,9 @@ void free_len_str_array(LEN_STR_ARRAY *lsa)
 
     for (int si = 0; si < lsa->len; si++)
     {
-        //free(lsa->strs[si]);
+        free(lsa->strs[si]);
         lsa->strs[si] = NULL;
     }
 
-    //free(lsa);
+    free(lsa);
 }

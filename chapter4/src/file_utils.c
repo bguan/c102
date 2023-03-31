@@ -8,20 +8,28 @@
 #include "file_utils.h"
 #include "common.h"
 
+/* return the suffix of a string of filename after the right most '.'.
+ * if none return the whole string as suffix
+ */
 char *suffix(char *fname)
 {
-	return strrchr(fname, '.');
+	if (fname == NULL) return NULL;
+	char* dot_str = strrchr(fname, '.');
+    if (dot_str == NULL) return fname;
+
+	return dot_str+1;
 }
 
 bool is_txt(char *fname)
 {
-	const size_t suffix_len = strnlen(TXT_SUFFIX, MAXNAMLEN);
-	const size_t fname_len = strnlen(fname, MAXNAMLEN);
+	const size_t suffix_len = strnlen(TXT_SUFFIX, MAX_WORD_LEN);
+	const size_t fname_len = strnlen(fname, MAX_STR_LEN);
 
 	if (fname == NULL || fname_len <= suffix_len)
 		return false;
 
 	const char *fname_suffix = suffix(fname);
+	if (fname_suffix == NULL) return false;
 	return (strncmp(fname_suffix, TXT_SUFFIX, fname_len) == 0);
 }
 
@@ -47,17 +55,17 @@ LEN_STR_ARRAY *find_txt_files_in_dir(char *dir_path, int max_files)
 		exit(1);
 	}
 
+	char *fpath = malloc(MAX_STR_LEN+1);
+	if (fpath == NULL)
+	{
+		fprintf(stderr, "Failed to allocate memory for file path of size %ld, abort!\n", MAX_STR_LEN);
+		exit(1);
+	}
 	while ((entry = readdir(dp)))
 	{
 		char *fname = entry->d_name;
-		if (entry->d_type == DT_REG && is_txt(fname) && fpaths->len < max_files)
+		if (entry->d_type == 8 /*DT_REG*/ && is_txt(fname) && fpaths->len < max_files)
 		{
-			char *fpath = (char *)malloc((strnlen(dir_path, MAXNAMLEN) + 1 + strnlen(fname, MAXNAMLEN)) * sizeof(char));
-			if (fpath == NULL)
-			{
-				fprintf(stderr, "Failed to allocate memory for file path of size %ld, abort!\n", MAX_STR_LEN * sizeof(char));
-				exit(1);
-			}
 			sprintf(fpath, "%s/%s", dir_path, fname);
 			fpaths = append_len_str_array(fpaths, fpath);
 			if (fpaths == NULL)
@@ -65,11 +73,11 @@ LEN_STR_ARRAY *find_txt_files_in_dir(char *dir_path, int max_files)
 				fprintf(stderr, "Failed appending path %s into results, abort!\n", fpath);
 				exit(1);
 			}
-			// free(fpath);
 		}
 	}
-
 	closedir(dp);
+	free(fpath);
+
 	return fpaths;
 }
 
@@ -87,7 +95,7 @@ FILE_DIGEST *process_file(char *file_path, int max_words)
 	}
 
 	size_t buf_size = MAX_LINE_LEN;
-	char *buf = (char *)malloc(buf_size * sizeof(char));
+	char *buf = malloc(buf_size+1);
 	if (buf == NULL)
 	{
 		fprintf(stderr, "Failed to allocate buffer of size %ld for reading file %s, abort!\n", buf_size, file_path);
@@ -95,7 +103,7 @@ FILE_DIGEST *process_file(char *file_path, int max_words)
 	}
 
 	size_t digest_size = sizeof(FILE_DIGEST);
-	FILE_DIGEST *fdigest = (FILE_DIGEST *)malloc(digest_size);
+	FILE_DIGEST *fdigest = malloc(digest_size);
 	if (fdigest == NULL)
 	{
 		fprintf(stderr, "Failed to allocate FILE_DIGEST of size %ld for reading, abort!\n", digest_size);
@@ -111,13 +119,13 @@ FILE_DIGEST *process_file(char *file_path, int max_words)
 		exit(1);
 	}
 
-	ssize_t read = 0;
+	long read = 0;
 	while ((read = getline(&buf, &buf_size, f)) > 0)
 	{
 		fdigest->num_lines++;
 		fdigest->total_size += read;
 		char *tok;
-		printf("Read Line: %s", buf);
+		// printf("Read Line: %s\n", buf);
 		if (read > 0)
 		{
 			for (tok = strtok(buf, TOK_DELIM);
@@ -131,7 +139,7 @@ FILE_DIGEST *process_file(char *file_path, int max_words)
 					exit(1);
 				}
 				tok = low_tok;
-				printf("token: %s\n", tok);
+				//printf("token: %s\n", tok);
 
 				fdigest->unique_words = append_len_str_array_if_new(fdigest->unique_words, tok);
 				if (fdigest->unique_words == NULL)
@@ -148,7 +156,7 @@ FILE_DIGEST *process_file(char *file_path, int max_words)
 		}
 	}
 	fclose(f);
-	// free(buf);
+	free(buf);
 
 	return fdigest;
 }
@@ -158,5 +166,5 @@ void free_digest(FILE_DIGEST *d)
 {
 	free_len_str_array(d->unique_words);
 	d->unique_words = NULL;
-	// free(d);
+	free(d);
 }

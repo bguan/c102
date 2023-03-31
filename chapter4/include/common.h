@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#define MAX_WORD_LEN 100
-#define MAX_STR_LEN 1000
+#define MAX_WORD_LEN 100L
+#define MAX_STR_LEN 1000L
 
 /* return if new_str is found in strings, up to max entries */
 bool is_in(char **strings, char *new_str, int max_entries);
