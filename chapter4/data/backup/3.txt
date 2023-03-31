@@ -1,0 +1,16 @@
+Chapter 3 Detour to Make
+As covered in the last chapter, there were a lot of steps in compiling C programs, or any other compiled languages for that matter.  For large projects with tens, hundreds, or even thousands of C and Header files, it is next to impossible to compile and link them by issuing individual cc commands, so the lazy programmers in the past invented a tool called “make” to automate this process. According to this Quora post, the linux kernel has in the order of tens of millions of code, spread over tens of thousands of files, mostly in C/C++.
+
+Let’s watch https://youtu.be/8oyQ3ixxDaM which explains the key concepts of make and Makefile much better than I can.
+
+Task: Automate the compilation chain of the project in the last chapter using “make” and Makefile.
+
+Now the task is to:
+Write a Makefile and use it to compile and link your code from Chapter 2!
+
+Rabbit Hole
+Makefile is not enough as the world is too complex: too many operating systems! The Makefile you wrote to build your C/C++ project for one operating system using a certain set of compilers and libraries will most certainly break when run under a different operating system with its own ecosystem of build tools.  So someone automated Makefile generation with a tool called CMake. 
+
+Watch if curious https://youtu.be/mKZ-i-UfGgQ also the text supporting the video is https://codevion.github.io/#!cpp/cmake.md 
+
+Note: At beginner’s level you are NOT expected to need to learn CMake or other higher level build tools beyond Make just yet...

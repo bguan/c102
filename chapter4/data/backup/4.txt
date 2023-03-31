@@ -1,0 +1,54 @@
+Chapter 4 Text Processing using Standard Library
+Before we dive into the C Standard Library (https://en.wikipedia.org/wiki/C_standard_library), you should bear in mind this was developed in the 70s!  It was a great convenience during those years to have a standard set of useful functions everywhere C is supported instead of reinventing the wheels for every project, but due to its age, and language restrictions, many of the tasks can be accomplished more efficiently, securely and easily with newer languages and libraries, such as Standard C++ Library & STL from the 80s, Java standard libraries and many open source contributions from the 90s, Python and its ecosystem of open source libraries etc.
+
+For a good intro to the shortcomings of C standard library, you can check: https://en.wikipedia.org/wiki/C_standard_library#Problems_and_workarounds 
+
+That said, C started the trend of commonly used standard libraries including its superset POSIX library (https://en.wikipedia.org/wiki/C_POSIX_library) across multiple platforms and operating systems, and if you find yourself needing to code in C, knowledge of what’s available is still very useful, for quick and dirty low usage low risk usage its fine.  For production and/or high risk situations, there are better alternatives such as Google’s Abseil (https://abseil.io) wherever C++ is acceptable or search the open source world for your specific situation.
+ 
+This chapter’s exercise is to extend your current design to:
+
+Extend file_utils.h to support new functions and return type:
+/* Return array of string of filenames of all files ending 
+ * in .txt in dir_name, up to max files,
+ * return null if error or no files found.
+ *
+ * Caller must free memory of returned results when done!
+ */
+char** find_txt_files_in_dir(char * dir_name, int max_files); 
+
+/* Data structure holding processing results of each file */
+typedef struct {
+  char** unique_words; // lowercase unique words in file
+  size_t total_size;
+  int num_lines;
+} FILE_DIGEST;
+
+/* Function to process an ASCII only txt file, 
+ * return null if error.
+ * Caller must free memory of returned results when done!
+ */
+FILE_DIGEST* process_file(char * file_name, int max_words);
+
+
+Modify main() to expect a directory name as argv[1] instead of filename, call find_txt_files_in_dir(...) to find out all (up to 100) txt files in there
+If there are indeed txt files in directory, loop over them and for each filename, call process_file(...) to get the FILE_DIGEST, setting max_words to say 1000
+Combine the FILE_DIGESTs to print some global statistics of all text files:
+Average size per file
+Average number of unique words per file
+Average line count per file
+Average line length per file
+Print out the combined unique words across all txt files (don’t forget to remove duplicates!)
+Don’t forget to free the memory allocated for array of filenames, and each FILE_DIGEST as you are don’t reading them
+For this exercise let’s assume the file is ASCII only, so we don’t have to deal with multibyte characters like UNICODE
+Modify file_utils.c to implement the new functions
+In find_txt_files_in_dir(...)
+Use the POSIX library <dirent.h> to read the content of a directory, see https://en.wikibooks.org/wiki/C_Programming/POSIX_Reference/dirent.h
+You should use <stdlib.h> to allocate memory big enough to hold all the filenames, a simple approach might be to start with an array of max_files char* by calling malloc(...),  then at the end of looping thru the directory, shrink it down to size by calling realloc(...) 
+(Don’t you miss having an ArrayList like in Java?)
+In process_file(...) 
+Use malloc(...) to allocate size of max_words char* array unique_words ,  then at the end of looping thru the file, shrink it down to size by calling realloc(...) 
+let’s use the <stdio.h> getline(...) to loop and read each line of the file
+For simplicity in learning, use <string.h> strtok(...) to break the line into words, separated by any non-alphabets.  As strtok(...) is quite primitive, you need to supply a string containing all the non alphabet characters, i.e. all space, tab, newline, numbers, punctuations, symbols
+Use <ctype.h> tolower(...) to write an utility function convert string to lowercase, then use it to convert the tokens you extracted to lower case
+Scan through unique_words, add the new found token if not already seen before, but remember don’t exceed max_words
+Note that it is extremely inefficient to scan and rescan an array repeatedly like this, that is why newer languages either have built in data structures like Set, HashMap, ... directly into the language, or have them as part of some standard library, e.g. Java collection library, C++ STL library, python set and dictionary... for this exercise let’s ignore it for now 

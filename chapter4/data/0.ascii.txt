@@ -1,0 +1,33 @@
+Programming in C - Beginner Step 2
+- For Milo, the aspiring software engineer!  
+By Brian Guan, Mar 2023
+Chapter 0 Pre-Requisite
+Chapter 1 Warm-up - Reading Text in Some File
+Chapter 2 Extract, Include, Compile, Link, Run!
+Deeper Dive into Macros and Preprocessors
+Deeper Dive into Assembly and Beyond
+Chapter 3 Detour to Make
+Rabbit Hole
+Chapter 4 Text Processing using Standard Library
+Chapter 5 More Tooling...
+Chapter 6 Data Structure & Memory Management
+Chapter 7 Version Control & Github
+Chapter 8 Building a Simple Search Engine!
+Chapter 9 Building a Simple Web Server?
+Chapter 10 Building A Pong like Terminal Game
+Chapter 0 Pre-Requisite
+This booklet is presenting concepts as a series of C coding projects that highlights a couple of core concepts per chapter
+You must have done some intro programming course such as AP CS, programming in C can feel a bit clumsy and antiquated in the modern age of computing
+You must have learn some command line skills in a unix like environment and have access to such an environment, such as Linux using Terminal, MacOS using Terminal, or Windows 10 or 11 using cmd with WSL, or a web based virtual machine such as the free GoCalc terminal
+If not, I would recommend watching this 1 hour free class on Youtube (but please do it across multiple sessions if you are new to this dark art!)
+You must have learn at least the most basic C programming so that you can:
+Write, compile and run a complete C program to print 
+Hello World
+ in a command line shell environment
+Know how to declare and loop through an array of strings and int to perform some task like finding average string length or numerical average
+Know how to organize code into functions
+Know what a struct is and how to use it
+Know the basic of pointers and references
+Know how to allocate memory dynamically to store new data, as well as freeing it once you are done
+Know how to use standard library to read the content of a text file, loop through it line by line, perform some processing like printing it out line by line, and closing the file when done
+If not, you should watch something like a 3 hours C crash course on Youtube

@@ -1,0 +1,20 @@
+Chapter 1 Warm-up - Reading Text in Some File
+
+Your assignment is to write a complete C program “process.c” compiled to executable “process” to:
+
+Read the first argument given when the program is launched from command line i.e. argv[1]
+This article explains what argc and argv of the main(...) function in C are used for https://www.ibm.com/docs/en/i/7.1?topic=functions-main-function
+Check to see if this argument is a valid and readable file, Open & read the file, loop through and print out the content of the file line by line, followed by how many bytes the line has
+Unnecessary details: A line in unix text file is terminated by the carriage return and newline characters pair “\r\n”
+Print the total number of lines and the average line length
+Close the file at the end
+If everything ran normally, exit and return 0 from main()
+If an error occurred at anytime during execution, print an error message to stderr and exit by returning 1 from main()
+
+You may find these other resources helpful
+https://www.gnu.org/software/libc/manual/html_mono/libc.html 
+https://www.gnu.org/software/libc/manual/html_mono/libc.html#Opening-Streams
+https://www.gnu.org/software/libc/manual/html_mono/libc.html#Line-Input 
+https://www.gnu.org/software/libc/manual/html_mono/libc.html#String-and-Array-Utilities 
+You may need to learn how to use the gcc compiler to generate an executable file of a name that you choose instead of a.out, see 
+https://www.thegeekstuff.com/2012/10/gcc-compiler-options/  

@@ -1,0 +1,28 @@
+Chapter 5 More Tooling…
+
+... TBD ... CUnit, gdb, IDE like vscode, eclipse, ? ...
+
+Chapter 6 Data Structure & Memory Management
+
+... TBD ... malloc, free, realloc, linked list, arraylist, sort, hashmap? ...
+
+
+
+Chapter 7 Version Control & Github
+
+... TBD ... 
+
+Chapter 8 Building a Simple Search Engine!
+
+... TBD ... 
+
+Chapter 9 Building a Simple Web Server?
+
+... TBD ... 
+
+Chapter 10 Building A Pong like Terminal Game
+
+... TBD ... using ncurses
+
+
+

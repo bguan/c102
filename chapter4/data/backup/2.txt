@@ -1,0 +1,125 @@
+Chapter 2 Extract, Include, Compile, Link, Run!
+
+If, like me, the first time you write a C program like the one in Chapter 1, all the logic is cramped inside the main() function.  You’ve probably been taught to extract and break logic into chunks called functions, but most probably still all in the code file. But in any real C (or Java, Python, C++, ...) project, there will be thousands, or even millions of lines of code. It is more manageable to separate code into different files, the old Divide and Conquer approach.
+
+Let’s see how this is typically done in a C project.
+
+Using the code from chapter 1, if you haven’t done so already, extract the logic of reading a file then computing and returning average bytes per line into a separate function from main(). May be something like:
+
+/*
+ * open file 
+ * read each line 
+ * track count of lines and sum of length
+ * close file
+ * return average length per line
+ */ 
+int findAvgLineLen(char* filename) {
+  ...
+}
+
+int main(int argc, char* argv[]) {
+  ...
+  int avgLen = findAvgLineLen(filename);
+  printf("Average line length in %s is %d\n", filename, avgLen);
+  ...
+}
+
+
+If it's all working, create another C file, name it as “file_uitils.c”, then cut the findAvgLineLen()function from “process.c” and put it there.
+
+But then how is main() going to find where findAvgLineLine() is now? 
+
+Watch this video to find out: 
+https://youtu.be/x8gsHFBW7zY
+
+In short, “process.c” will need to import a header file listing the signature of all the exported functions and types of “file_utils.c”, in a file typically named by convention “file_utils.h” , which may look like
+
+...
+int findAvgLineLen(char* filename);
+...
+
+
+If the concept of function prototype and header file is still fuzzy after watching the earlier video, this article may help: 
+
+https://markkevinbaltazar.medium.com/c-header-files-and-prototypes-170ecdf526d 
+
+
+In short, in header files, typically only the prototype or signature of functions are listed, not the implementation. Its job is to tell other code that imports it, in our case “process.c”, that there is a function int findAvgLineLen(char* filename) that can be used.
+
+The header file “file_utils.h” is also imported into “file_utils.c” to make sure that the findAvgLineLen()  is implemented adhering to the signature promised.
+
+Now that you’ve written all the pieces in the 3 separate files, how do you compile it all?  If you are using an IDE like Eclipse or VSCode, it may magically just do it all for you. To understand what is going on under the hood, let’s do it all on command lines to invoke the gcc tool. 
+
+You may need to re-read: https://www.thegeekstuff.com/2012/10/gcc-compiler-options/  
+gcc -c XXX.c -o XXX.o to compile a XXX.c file in a piecemeal fashion, into an intermediate format object file, by convention, you should name it XXX.o if its from compiling XXX.c
+gcc -o myExecutable XXX.o YYY.o ZZZ.o ... to generate an executable file called myExecutable by linking all the relevant intermediate object files 
+I think this video explains it really well https://www.youtube.com/watch?v=N2y6csonII4 
+
+Deeper Dive into Macros and Preprocessors
+You may have noticed that some lines in C starts with #, such as #include <stdio.h>, and when creating header files, many articles on best practices has these few lines, e.g. in a header file XXX.h:
+
+#ifndef XXX_H
+#define XXX_H
+
+void xxx_func();
+
+#endif
+
+These are known as Macros, and they are really not strictly part of the compilation process, but handled before compilation begins by the C Preprocessor.  To quote GNU’s manual:
+
+The C preprocessor, often known as cpp, is a macro processor that is used automatically by the C compiler to transform your program before compilation. It is called a macro processor because it allows you to define macros, which are brief abbreviations for longer constructs.
+
+
+The #include macro actually copies and insert in-place into the C file being preprocessed the entirety of the header file being included e.g. <stdio.h>, and “file_utils.h”, and recursively in any other header files in the said header file, to generate an intermediate file to be fed into the compiler.  This is typically hidden from the programmer, but to see this in its gnarly action, you can call the c compiler to save a copy of this intermediate file.  For example, given a simplistic 4 liner C program like “hello.c”
+
+#include <stdio.h>
+int main() {
+  printf("Hello World!\n");
+}
+
+
+You can invoke the preprocessor with this command: cc -E hello.c -o hello.p
+
+If you open hello.p to see its content, you will see that your little hello.c file has ballooned into a multi hundred lines monstrosity because “stdio.h” is usually a huge list of functions and types.  You also get to see where on your computer the compiler pulls this particular copy of “stdio.h”.
+
+Now we can talk about those weird #ifndef XXX_H ... #define XXX_H ... #endif.
+
+These lines protect the header file from being repeatedly included and then later re-compiled, also known as the Once-Only Headers, see: https://gcc.gnu.org/onlinedocs/cpp/Once-Only-Headers.html 
+
+Why should you care? Including a header file more than once will certainly slow down the compilation process, but more importantly this often leads to lots of warnings, or errors that stop compilation.
+
+Deeper Dive into Assembly and Beyond
+There is one more detail hidden below the surface of compilation worth calling out: the Assembly.
+
+Assembly Language is an intermediate language written in human readable code that has a one-to-one corresponding machine executable code of 1s and 0s that the processor on your machine can execute directly.  Like the preprocessing intermediate file, C compiler typically turns a piece of C code into another intermediate file of assembly code but hides it from you.  Given “hello.c” from previous example, you can issue this command to unveil the hidden beast:
+
+cc -S hello.c -o hello.a
+
+You can open hello.a to see the content.  Don’t expect to understand most stuff in there unless you have done assembly programming in the specific processor like Intel X86, or Apple M1 aka ARM etc.
+
+The c compiler can then take this intermediate Assembly file and turn it into a binary Object file. As mentioned earlier in this chapter, you use this command to invoke the assembler to translate the assembly file into the object file:
+
+cc -c hello.c -o hello.o
+
+However, you would find that this file is a bunch of gobbledygook that is not meant for human eyes.
+
+Is this the end of the line?  Can you finally run your glorious hello world program?
+
+There’s one more step. Even though the preprocessor pulled in <stdio.h> earlier in the compilation process, the implementation of stdio, specifically printf(), is not defined yet.
+
+This final step is called Linking.
+
+To get the final executable version of hello, issue this command:
+
+cc hello.c -o hello
+
+(If you omit the -o, i.e. “cc hello.c”, will give you an executable file called a.out by convention.) 
+
+Depending on the operating system, the linking process will either pull a statically linked library containing printf() , or a dynamically linked stub that makes an operating system call at runtime to delegate the main logic of printf() so that programs such as hello will remain as small as possible and hopefully still run after some C library and OS upgrades. 
+
+FYI on my 7 years old old intel macbook pro running MacOS Monterey version 12.6.3, the compiler fetches from:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include the header file for stdio.h
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib  the library file for stdio in C to link to your object file from libc.tbd
+On a Linux machine, the compiler fetches from:
+/usr/include the header file stdio.h
+/lib/x86_64-linux-gnu the library file for stdio in C libc.so to link to your object
