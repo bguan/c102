@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "common.h": "c",
+        "common.c": "c",
+        "main.c": "c",
+        "test_all.cpp": "cpp",
+        "test_common.cpp": "cpp",
+    },
+    "cmake.configureOnOpen": false,
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/Users/bguan/git/c102/chapter5/build",
+            "binaryPath": "/Users/bguan/git/c102/chapter5/build/test_all",
+            "binaryArgs": []
+        }
+    ]
+}
