@@ -5,9 +5,15 @@
         "main.c": "c",
         "test_all.cpp": "cpp",
         "test_common.cpp": "cpp",
+        "assert.h": "c"
     },
     "cmake.configureOnOpen": false,
     "makefile.launchConfigurations": [
+        {
+            "cwd": "/Users/bguan/git/c102/chapter5/build",
+            "binaryPath": "/Users/bguan/git/c102/chapter5/build/test_common",
+            "binaryArgs": []
+        },
         {
             "cwd": "/Users/bguan/git/c102/chapter5/build",
             "binaryPath": "/Users/bguan/git/c102/chapter5/build/test_all",

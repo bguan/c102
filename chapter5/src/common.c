@@ -1,10 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "common.h"
 
 #define PTR_SZ sizeof(char **)
+
+#ifdef UNIT_TESTING
+extern void *_test_malloc(const size_t size, const char *file, const int line);
+extern void *_test_realloc(void *ptr, const size_t size, const char *file, const int line);
+extern void *_test_free(void *ptr, const char *file, const int line);
+
+#define malloc(size) _test_malloc(size, __FILE__, __LINE__)
+#define realloc(ptr, size) _test_realloc(ptr, size, __FILE__, __LINE__)
+#define free(ptr) _test_free(ptr, __FILE__, __LINE__)
+#endif
 
 STR_ARRAY *init_str_array()
 {
@@ -151,19 +162,22 @@ void free_str_array(STR_ARRAY *sa)
     {
         if (sa->strs[si] != NULL) 
         {
+            // printf("Free sa->strs[%d]\n", si);
             free(sa->strs[si]);
             sa->strs[si] = NULL;
         }
     }
 
     sa->len = 0;
-    sa->allocated = 0;
 
     if (sa->strs != NULL)
     {
+        // printf("Free sa->strs\n");
         free(sa->strs);
         sa->strs = NULL;
     }
+    sa->allocated = 0;
 
+    // printf("Free sa\n");
     free(sa);
 }

@@ -1,4 +1,6 @@
+#include <string.h>
 #include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
 
 extern "C"
 {
@@ -8,10 +10,12 @@ extern "C"
 TEST_GROUP(Common){
 	void setup()
 	{
+		mock().disable();
 	}
 
 	void teardown()
-    {
+	{
+		mock().clear();
 	}
 };
 
@@ -27,11 +31,42 @@ TEST(Common, test_init_str_array)
 	free_str_array(sa);
 }
 
-TEST(Common, test_append_str_array)
+// Mock string.h strndup() calls
+char* strndup(const char *s1, size_t n)
+{
+	mock().actualCall("strndup").withParameter("s1", s1).withParameter("n", n);
+	return strdup(s1);
+}
+
+TEST(Common, test_append_str_array_single_call)
 {
 	STR_ARRAY *sa = init_str_array();
 	
-    char *s1 = (char*)"Uno";
+	char *s1 = (char*)"Uno";
+
+	mock().enable();
+	mock().expectOneCall("strndup").withParameter("s1", s1).withParameter("n", MAX_STR_LEN).andReturnValue(strdup(s1));
+	sa = append_str_array(sa, s1);
+	mock().checkExpectations();
+	mock().disable();
+
+	CHECK_EQUAL(1, sa->len);
+	CHECK_EQUAL(GROWTH_FACTOR, sa->allocated);
+	STRCMP_EQUAL("Uno", sa->strs[0]);
+	CHECK(s1 != sa->strs[0]); // make sure content is copied, not just reusing pointer
+	CHECK_EQUAL(NULL, sa->strs[1]);
+
+	free_str_array(sa);
+	CHECK_EQUAL(0, sa->len);
+	CHECK_EQUAL(0, sa->allocated);
+	CHECK_EQUAL(NULL, sa->strs);
+}
+
+TEST(Common, test_append_str_array_multi_calls)
+{
+	STR_ARRAY *sa = init_str_array();
+	
+	char *s1 = (char*)"Uno";
 
 	sa = append_str_array(sa, s1);
 
@@ -41,13 +76,14 @@ TEST(Common, test_append_str_array)
 	CHECK(s1 != sa->strs[0]); // make sure content is copied, not just reusing pointer
 	CHECK_EQUAL(NULL, sa->strs[1]);
 
-    char *s2 = (char*)"Dos";
+	char *s2 = (char*)"Dos";
 	sa = append_str_array(sa, s2);
 
 	CHECK_EQUAL(2, sa->len);
 	CHECK_EQUAL(GROWTH_FACTOR, sa->allocated);
 	STRCMP_EQUAL("Uno", sa->strs[0]);
 	STRCMP_EQUAL("Dos", sa->strs[1]);
+	CHECK(s2 != sa->strs[1]); // make sure content is copied, not just reusing pointer
 	CHECK_EQUAL(NULL, sa->strs[2]);
 
 	for(int i = sa->len; i < 100; i++)
