@@ -1,0 +1,15 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/brian/Projects/c102/chapter5/build",
+            "binaryPath": "/home/brian/Projects/c102/chapter5/build/test_all",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "common.h": "c",
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp"
+    }
+}

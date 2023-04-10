@@ -5,8 +5,8 @@
 #define MAX_STR_LEN 1000
 
 typedef struct {
-    unsigned int len;
-    unsigned int allocated;
+    int len;
+    int allocated;
     char **strs;
 } STR_ARRAY;
 

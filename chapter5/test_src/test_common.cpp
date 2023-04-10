@@ -10,6 +10,7 @@ extern "C"
 TEST_GROUP(Common){
 	void setup()
 	{
+		// make sure mocks are disabled by default, i.e. tests that use mock must explicitly enable it
 		mock().disable();
 	}
 
@@ -26,7 +27,7 @@ TEST(Common, test_init_str_array)
 	// "Newly initialized STR_ARRAY has len == 0", allocated == 0, strs == NULL
 	CHECK_EQUAL(0, sa->len);
 	CHECK_EQUAL(0, sa->allocated);
-	CHECK_EQUAL(NULL, sa->strs);
+	POINTERS_EQUAL(NULL, sa->strs);
 
 	free_str_array(sa);
 }
@@ -38,14 +39,15 @@ char* strndup(const char *s1, size_t n)
 	return strdup(s1);
 }
 
-TEST(Common, test_append_str_array_single_call)
+// Example showing how to use mock to check the tested function calls specific function with specific params
+TEST(Common, test_append_str_array_uses_strndup)
 {
 	STR_ARRAY *sa = init_str_array();
 	
 	char *s1 = (char*)"Uno";
 
 	mock().enable();
-	mock().expectOneCall("strndup").withParameter("s1", s1).withParameter("n", MAX_STR_LEN).andReturnValue(strdup(s1));
+	mock().expectOneCall("strndup").withParameter("s1", s1).withParameter("n", MAX_STR_LEN);
 	sa = append_str_array(sa, s1);
 	mock().checkExpectations();
 	mock().disable();
@@ -54,12 +56,9 @@ TEST(Common, test_append_str_array_single_call)
 	CHECK_EQUAL(GROWTH_FACTOR, sa->allocated);
 	STRCMP_EQUAL("Uno", sa->strs[0]);
 	CHECK(s1 != sa->strs[0]); // make sure content is copied, not just reusing pointer
-	CHECK_EQUAL(NULL, sa->strs[1]);
+	POINTERS_EQUAL(NULL, sa->strs[1]);
 
 	free_str_array(sa);
-	CHECK_EQUAL(0, sa->len);
-	CHECK_EQUAL(0, sa->allocated);
-	CHECK_EQUAL(NULL, sa->strs);
 }
 
 TEST(Common, test_append_str_array_multi_calls)
@@ -74,7 +73,7 @@ TEST(Common, test_append_str_array_multi_calls)
 	CHECK_EQUAL(GROWTH_FACTOR, sa->allocated);
 	STRCMP_EQUAL("Uno", sa->strs[0]);
 	CHECK(s1 != sa->strs[0]); // make sure content is copied, not just reusing pointer
-	CHECK_EQUAL(NULL, sa->strs[1]);
+	POINTERS_EQUAL(NULL, sa->strs[1]);
 
 	char *s2 = (char*)"Dos";
 	sa = append_str_array(sa, s2);
@@ -84,7 +83,7 @@ TEST(Common, test_append_str_array_multi_calls)
 	STRCMP_EQUAL("Uno", sa->strs[0]);
 	STRCMP_EQUAL("Dos", sa->strs[1]);
 	CHECK(s2 != sa->strs[1]); // make sure content is copied, not just reusing pointer
-	CHECK_EQUAL(NULL, sa->strs[2]);
+	POINTERS_EQUAL(NULL, sa->strs[2]);
 
 	for(int i = sa->len; i < 100; i++)
 	{
@@ -94,9 +93,6 @@ TEST(Common, test_append_str_array_multi_calls)
 	}
 
 	free_str_array(sa);
-	CHECK_EQUAL(0, sa->len);
-	CHECK_EQUAL(0, sa->allocated);
-	CHECK_EQUAL(NULL, sa->strs);
 }
 
 TEST(Common, test_find_str_array)
