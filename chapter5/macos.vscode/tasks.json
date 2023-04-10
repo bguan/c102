@@ -34,12 +34,13 @@
                 "-g",
                 "-Wall",
                 "-I${workspaceFolder}/include",
-                "-lCppUTest",
-                "-lCppUTestExt",
-                "${workspaceFolder}/src/*.c",
                 "${workspaceFolder}/test_src/*.cpp",
+                "${workspaceFolder}/.vscode/*.o",
                 "-o",
-                "${workspaceFolder}/.vscode/${fileBasenameNoExtension}"
+                "${workspaceFolder}/.vscode/${fileBasenameNoExtension}",
+                "-L/usr/local/lib",
+                "-lCppUTest",
+                "-lCppUTestExt"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
