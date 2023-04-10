@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef STR_ARRAY_H
+#define STR_ARRAY_H
 
 #define GROWTH_FACTOR 4
 #define MAX_STR_LEN 1000

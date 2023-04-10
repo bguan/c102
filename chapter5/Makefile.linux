@@ -7,18 +7,18 @@ TEST_LDFLAGS = -pthread -L/usr/lib/x86_64-linux-gnu -lCppUTest -lCppUTestExt
 
 all:	build/main build/test_all
 
-build/main: src/main.c build/common.o
+build/main: src/main.c build/str_array.o
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-build/common.o: src/common.c include/common.h
+build/str_array.o: src/str_array.c include/str_array.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test:	build/test_all run_tests
 
-build/test_all: test_src/test_all.cpp build/common.o build/test_common.o
+build/test_all: test_src/test_all.cpp build/str_array.o build/test_str_array.o
 	$(CPP) $(CPPFLAGS) $^ -o $@ $(TEST_LDFLAGS) 
 
-build/test_common.o: test_src/test_common.cpp build/common.o
+build/test_str_array.o: test_src/test_str_array.cpp build/str_array.o
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 run_tests:	build/test_all

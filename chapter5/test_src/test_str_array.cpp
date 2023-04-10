@@ -4,7 +4,7 @@
 
 extern "C"
 {
-	#include "common.h"
+	#include "str_array.h"
 }
 
 TEST_GROUP(Common){

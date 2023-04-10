@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "common.h"
+#include "str_array.h"
 
 int main(int argc, char **argv)
 {

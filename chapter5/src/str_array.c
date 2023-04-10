@@ -3,19 +3,9 @@
 #include <string.h>
 #include <assert.h>
 
-#include "common.h"
+#include "str_array.h"
 
 #define PTR_SZ sizeof(char **)
-
-#ifdef UNIT_TESTING
-extern void *_test_malloc(const size_t size, const char *file, const int line);
-extern void *_test_realloc(void *ptr, const size_t size, const char *file, const int line);
-extern void *_test_free(void *ptr, const char *file, const int line);
-
-#define malloc(size) _test_malloc(size, __FILE__, __LINE__)
-#define realloc(ptr, size) _test_realloc(ptr, size, __FILE__, __LINE__)
-#define free(ptr) _test_free(ptr, __FILE__, __LINE__)
-#endif
 
 STR_ARRAY *init_str_array()
 {
@@ -33,25 +23,18 @@ STR_ARRAY *init_str_array()
     return sa;
 }
 
-void wipe_new_alloc(char** strs, int from, int to)
-{
-	for(int i = from; i < to; i++)
-		strs[i] = NULL;
-}
-
 /* append a string by copying it into end of array, return NULL if error */
 STR_ARRAY *append_str_array(STR_ARRAY *sa, char *new_str)
 {
     if (sa->allocated == 0)
     {
-        sa->strs = (char **)malloc(GROWTH_FACTOR * PTR_SZ);
+        sa->strs = (char **)calloc(GROWTH_FACTOR, PTR_SZ);
         if (sa->strs == NULL)
         {
             fprintf(stderr, "Failed to allocate memory to append %s to STR_ARRAY, abort!\n", new_str);
             exit(1);
         }
         sa->allocated = GROWTH_FACTOR;
-		wipe_new_alloc(sa->strs, 0, sa->allocated);
     }
     else if (sa->len >= sa->allocated)
     {
@@ -62,7 +45,6 @@ STR_ARRAY *append_str_array(STR_ARRAY *sa, char *new_str)
             fprintf(stderr, "Failed to reallocate memory to append %s to STR_ARRAY, abort!\n", new_str);
             exit(1);
         }
-		wipe_new_alloc(sa->strs, sa->len, sa->allocated);
     }
 
     char *new_str_cpy = strndup(new_str, MAX_STR_LEN);
@@ -122,7 +104,6 @@ STR_ARRAY *insert_str_array(STR_ARRAY *sa, int pos, char *new_str)
             fprintf(stderr, "Failed to reallocate memory to append %s to STR_ARRAY, abort!\n", new_str);
             exit(1);
         }
-		wipe_new_alloc(sa->strs, sa->len, sa->allocated);
     }
 
     if (pos >= sa->len)
