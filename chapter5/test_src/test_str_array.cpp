@@ -32,6 +32,12 @@ TEST(Common, test_init_str_array)
 	free_str_array(sa);
 }
 
+TEST(Common, test_append_str_array_handle_NULL)
+{
+	STR_ARRAY *sa = append_str_array(NULL, (char*)"dummy");
+	POINTERS_EQUAL(NULL, sa);
+}
+
 // Mock string.h strndup() calls
 char* strndup(const char *s1, size_t n)
 {
@@ -95,6 +101,12 @@ TEST(Common, test_append_str_array_multi_calls)
 	free_str_array(sa);
 }
 
+TEST(Common, test_find_str_array_handle_NULL)
+{
+	int pos = find_str_array(NULL, (char*)"dummy");
+	CHECK_EQUAL(-1, pos);
+}
+
 TEST(Common, test_find_str_array)
 {
 	STR_ARRAY *sa = init_str_array();
@@ -110,6 +122,12 @@ TEST(Common, test_find_str_array)
 	CHECK_EQUAL(1, i_dos);
 
 	free_str_array(sa);
+}
+
+TEST(Common, test_remove_str_array_handle_NULL)
+{
+	STR_ARRAY *sa = remove_str_array(NULL, 0);
+	POINTERS_EQUAL(NULL, sa);
 }
 
 TEST(Common, test_remove_str_array)
@@ -132,6 +150,12 @@ TEST(Common, test_remove_str_array)
 	STRCMP_EQUAL("Tres", sa->strs[1]);
 
 	free_str_array(sa);
+}
+
+TEST(Common, test_insert_str_array_handle_NULL)
+{
+	STR_ARRAY *sa = insert_str_array(NULL, 0, (char*)"dummy");
+	POINTERS_EQUAL(NULL, sa);
 }
 
 TEST(Common, test_insert_str_array)

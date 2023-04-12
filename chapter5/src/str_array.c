@@ -26,6 +26,12 @@ STR_ARRAY *init_str_array()
 /* append a string by copying it into end of array, return NULL if error */
 STR_ARRAY *append_str_array(STR_ARRAY *sa, char *new_str)
 {
+    if (sa == NULL)
+    {
+        fprintf(stderr, "ignoring attempt to append %s to NULL STR_ARRAY, returning NULL!\n", new_str);
+        return NULL;
+    }
+
     if (sa->allocated == 0)
     {
         sa->strs = (char **)calloc(GROWTH_FACTOR, PTR_SZ);
@@ -63,6 +69,12 @@ STR_ARRAY *append_str_array(STR_ARRAY *sa, char *new_str)
 /* find a string in array, return -1 if not found or error */
 int find_str_array(STR_ARRAY *sa, char *str)
 {
+    if (sa == NULL)
+    {
+        fprintf(stderr, "ignoring attempt to find %s in a NULL STR_ARRAY, returning -1!\n", str);
+        return -1;
+    }
+
     for (int i = 0; i < sa->len; i++)
     {
         if (strncmp(str, sa->strs[i], MAX_STR_LEN) == 0)
@@ -74,6 +86,12 @@ int find_str_array(STR_ARRAY *sa, char *str)
 /* remove an entry from array, return NULL if error */
 STR_ARRAY *remove_str_array(STR_ARRAY *sa, int pos)
 {
+    if (sa == NULL)
+    {
+        fprintf(stderr, "ignoring attempt to remove %d'th entry in a NULL STR_ARRAY, returning NULL!\n", pos);
+        return NULL;
+    }
+
     if (pos >= sa->len)
         return sa;
 
@@ -95,6 +113,12 @@ STR_ARRAY *remove_str_array(STR_ARRAY *sa, int pos)
 /* insert an entry into array, pushing entries below one slot down, return NULL if error */
 STR_ARRAY *insert_str_array(STR_ARRAY *sa, int pos, char *new_str)
 {
+    if (sa == NULL)
+    {
+        fprintf(stderr, "ignoring attempt to insert %s to %d'th slot in a NULL STR_ARRAY, returning NULL!\n", new_str, pos);
+        return NULL;
+    }
+
     while (pos >= sa->allocated)
     {
         sa->allocated = GROWTH_FACTOR * sa->allocated;
@@ -135,8 +159,8 @@ void free_str_array(STR_ARRAY *sa)
 {
     if (sa == NULL)
     {
-        fprintf(stderr, "ignoring attempt to free a NULL STR_ARRAY, abort!\n");
-        exit(1);
+        fprintf(stderr, "ignoring attempt to free a NULL STR_ARRAY!\n");
+        return;
     }
 
     for (int si = 0; si < sa->len; si++)

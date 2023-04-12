@@ -22,7 +22,7 @@ build/test_str_array.o: test_src/test_str_array.cpp build/str_array.o
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 run_tests:	build/test_all
-	build/test_all
+	build/test_all -v
 
 clean:
 	rm -fr build/*
