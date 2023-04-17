@@ -1,0 +1,30 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+    "files.associations": {
+        "console.h": "c",
+        "test_console.cpp": "cpp",
+        "ncurses.h": "c",
+        "time.h": "c",
+        "math.h": "c",
+        "sstream": "c"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/Users/bguan/git/c102/chapter6/build",
+            "binaryPath": "/Users/bguan/git/c102/chapter6/build/test-main",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/Users/bguan/git/c102/chapter6",
+            "binaryPath": "/Users/bguan/git/c102/chapter6/test_build/test_main",
+            "binaryArgs": [
+                "-v"
+            ]
+        },
+        {
+            "cwd": "/Users/bguan/git/c102/chapter6/test_build",
+            "binaryPath": "/Users/bguan/git/c102/chapter6/test_build/test_main",
+            "binaryArgs": []
+        }
+    ]
+}
