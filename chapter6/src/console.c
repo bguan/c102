@@ -6,13 +6,23 @@ static int _console_width = 0;
 static int _console_height = 0;
 static float _console_aspect = 0.0;
 
+static const int _CIRCLE_COLOR = 1;
+static const int _RECT_COLOR = 2;
+static const int _TEXT_COLOR = 3;
+
 void init_console()
 {
 	initscr();
-
 	_console_width = COLS;
 	_console_height = LINES;
 	_console_aspect = CONSOLE_FONT_ASPECT * COLS / LINES;
+
+	start_color();
+
+	// initialize 3 color schemes: Circle, Rectangle, Text
+	init_pair(_CIRCLE_COLOR, COLOR_BLACK, COLOR_RED);
+	init_pair(_RECT_COLOR, COLOR_BLACK, COLOR_GREEN);
+	init_pair(_TEXT_COLOR, COLOR_BLUE, COLOR_BLACK);
 
 	cbreak();
 	noecho();
@@ -86,7 +96,9 @@ int to_dev_height(float norm_y)
 
 void text_at(char* str, float x, float y)
 {
-	mvprintw(to_dev_y(y), to_dev_x(x), str);
+	attron(COLOR_PAIR(_TEXT_COLOR));
+	mvprintw(to_dev_y(y), to_dev_x(x), "%s", str);
+	attroff(COLOR_PAIR(_TEXT_COLOR));
 }
 
 void repeat_char(char * buffer, char c, int num)
@@ -109,13 +121,14 @@ void circle_at(float radius, float x, float y)
 	float b_squared = rad_y * rad_y;
 	bool too_small = rad_x < 3 || rad_y < 3;
 	char buffer[_console_width + 1];
+	attron(COLOR_PAIR(_CIRCLE_COLOR));
 	for (int dy = -rad_y; dy <= rad_y; dy++)
 	{
 		if (too_small)
 		{
 			// don't bother calculating, just draw rectangle
-			repeat_char((char *)&buffer, '@', rad_x < 1 ? 1 : rad_x * 2);
-			mvprintw(dev_y+dy, dev_x - rad_x, buffer);
+			repeat_char((char *)&buffer, ' ', rad_x < 1 ? 1 : rad_x * 2);
+			mvprintw(dev_y+dy, dev_x - rad_x, "%s", buffer);
 		}
 		else
 		{
@@ -126,25 +139,28 @@ void circle_at(float radius, float x, float y)
 			if (dx_squared > 0)
 			{
 				int dx = sqrt(dx_squared);
-				repeat_char((char *)&buffer, '@', dx < 1 ? 1 : dx * 2);
-				mvprintw(dev_y + dy, dev_x - dx, buffer);
+				repeat_char((char *)&buffer, ' ', dx < 1 ? 1 : dx * 2);
+				mvprintw(dev_y + dy, dev_x - dx, "%s", buffer);
 			}
 		}
 	}
+	attroff(COLOR_PAIR(_CIRCLE_COLOR));
 }
 
 void rect_at(float width, float height, float x, float y)
 {
 	int dev_x = to_dev_x(bound_x(x));
 	int dev_y = to_dev_y(bound_y(y));
-	int dev_w = to_dev_width(bound_x(width));
-	int dev_h = to_dev_height(bound_y(height));
+	int dev_w = to_dev_width(bound_width(width));
+	int dev_h = to_dev_height(bound_height(height));
 	char buffer[_console_width + 1];
+	attron(COLOR_PAIR(_RECT_COLOR));
 	for (int dy = dev_y - dev_h / 2; dy <= dev_y + dev_h / 2; dy++)
 	{
-		repeat_char((char*)&buffer, '*', dev_w);
-		mvprintw(y, dev_x-dev_w/2, buffer);
+		repeat_char((char*)&buffer, ' ', dev_w);
+		mvprintw(dy, dev_x-dev_w/2, "%s", buffer);
 	}
+	attroff(COLOR_PAIR(_RECT_COLOR));
 }
 
 void clear_area(float left_x, float top_y, float right_x, float bot_y)
@@ -159,6 +175,6 @@ void clear_area(float left_x, float top_y, float right_x, float bot_y)
 	int dev_bot_y = to_dev_y(bound_y(bot_y));
 	for (int y = dev_top_y; y <= dev_bot_y; y++)
 	{
-		mvprintw(y, dev_left_x, buffer);
+		mvprintw(y, dev_left_x, "%s", buffer);
 	}
 }

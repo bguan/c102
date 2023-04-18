@@ -24,6 +24,8 @@ int main() {
 		return 1;
 	}
 
+	text_at("Hello Ball!", -.05, .45);
+
 	float rad = 0.0;
 	for (;;)
 	{
@@ -31,13 +33,14 @@ int main() {
 		if (c == 'q' || c == 'Q') break;
 
 		if (rad < 0.001) {
-			clear_area(-.5, -.5, .5, .5);
+			clear_area(-.4, -.4, .4, .4);
 		} 
 		else
 		{
 			circle_at(rad, 0.0, 0.0);
+			rect_at(rad/2, rad/4, 0.0, 0.0);
 		}
-		rad = (rad > 0.45 ? 0.0 : rad + 0.0001);
+		rad = (rad > 0.4 ? 0.0 : rad + 0.00001);
 	}
 	end_console();
 	printf("Console Width Height is %d x %d\n", w, h);

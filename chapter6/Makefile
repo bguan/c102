@@ -32,12 +32,18 @@ TEST_EXE = $(TEST_BLD_DIR)/test_main
 # flags for C, C++ compiler and linker for runtime and test time
 CFLAGS = -g -Wall -I$(INCL_DIR)
 CPPFLAGS = -g -Wall -I$(INCL_DIR)
-LDFLAGS = -lncurses
+LDFLAGS = -lm -lncurses
 TEST_LDFLAGS = $(LDFLAGS) -lCppUTest -lCppUTestExt
 
 
 # Rules for Make targets
-all: $(EXE)
+all: $(BLD_DIR) $(TEST_BLD_DIR) $(EXE) 
+
+$(BLD_DIR):
+	mkdir -p $(BLD_DIR)
+
+$(TEST_BLD_DIR): 
+	mkdir -p $(TEST_BLD_DIR)
  
 $(EXE): $(ALL_OBJ)
 	$(CC) $^ -o $@ $(LDFLAGS) 
@@ -55,5 +61,5 @@ $(TEST_BLD_DIR)/%.o: $(TEST_SRC_DIR)/%.cpp
 	$(CPP) $(CPPFLAGS) -c $^ -o $@
 
 clean:
-	rm -fr $(BLD_DIR)/* $(TEST_BLD_DIR)/*
+	rm -fr $(BLD_DIR) $(TEST_BLD_DIR)
 	rm -fr .vscode/*.o .vscode/*.dSYM .vscode/*main

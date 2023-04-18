@@ -82,18 +82,19 @@ int wgetch(WINDOW* w)
 }
 
 // Mock mvprintw declaration
-int mvprintw(int y, int x, const char* str, ...) __attribute__((format(printf, 3, 4)));
+int mvprintw(int y, int x, const char* fmt, ...) __attribute__((format(printf, 3, 4)));
 
 // Mock mvprintw definition
-int mvprintw(int y, int x, const char* str, ...)
+int mvprintw(int y, int x, const char* fmt, ...)
 {
+	va_list args;
+	va_start(args, fmt);
 	mock().actualCall("mvprintw").
 		withIntParameter("y", y).
 		withIntParameter("x", x).
-		withStringParameter("str", str);
-	va_list args;
-    va_start(args, str);
-    va_end(args);
+		withStringParameter("fmt", fmt).
+		withStringParameter("s", va_arg(args, char*));
+	va_end(args);
 	return mock().returnIntValueOrDefault(0);
 }
 
@@ -246,8 +247,9 @@ TEST(ConsoleMock, test_text_at_call_mvprintw)
 	mock().expectOneCall("mvprintw").
 		withIntParameter("y", 0).
 		withIntParameter("x", 0).
-		withStringParameter("str", "hello");
-	text_at("hello", -0.5, -0.5);
+		withStringParameter("fmt", "%s").
+		withStringParameter("s", "hello");
+	text_at((char*)"hello", -0.5, -0.5);
 	mock().checkExpectations();
 	mock().disable();
 }
