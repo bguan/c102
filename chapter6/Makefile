@@ -37,7 +37,7 @@ TEST_LDFLAGS = $(LDFLAGS) -lCppUTest -lCppUTestExt
 
 
 # Rules for Make targets
-all: $(BLD_DIR) $(TEST_BLD_DIR) $(EXE) 
+all: $(EXE) 
 
 $(BLD_DIR):
 	mkdir -p $(BLD_DIR)
@@ -45,11 +45,14 @@ $(BLD_DIR):
 $(TEST_BLD_DIR): 
 	mkdir -p $(TEST_BLD_DIR)
  
-$(EXE): $(ALL_OBJ)
-	$(CC) $^ -o $@ $(LDFLAGS) 
+$(EXE): $(BLD_DIR) $(ALL_OBJ)
+	$(CC) $(ALL_OBJ) -o $@ $(LDFLAGS) 
 
-$(TEST_EXE): $(ALL_TEST_OBJ)
-	$(CPP) $^ -o $@ $(TEST_LDFLAGS) 
+run: $(EXE)
+	$(EXE) 
+
+$(TEST_EXE): $(BLD_DIR) $(TEST_BLD_DIR) $(ALL_TEST_OBJ)
+	$(CPP) $(ALL_TEST_OBJ) -o $@ $(TEST_LDFLAGS) 
 
 test: $(TEST_EXE)
 	$(TEST_EXE) -v 

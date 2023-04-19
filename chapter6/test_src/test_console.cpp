@@ -21,7 +21,7 @@ TEST_GROUP(ConsoleMock){
 	}
 };
 
-static const int _MOCK_LINES = 25;
+static const int _MOCK_LINES = 50;
 static const int _MOCK_COLS = 100;
 
 // Mock ncurses.h initscr() call
@@ -44,16 +44,6 @@ int cbreak()
 int noecho()
 {
 	return mock().actualCall("noecho").returnIntValue();
-}
-
-// Mock ncurses.h keypad() call
-int keypad(WINDOW* w, bool flag)
-{
-	return mock().
-		actualCall("keypad").
-		withParameter("w", stdscr).
-		withBoolParameter("flag", flag).
-		returnIntValue();
 }
 
 // Mock ncurses.h nodelay() call
@@ -105,7 +95,6 @@ TEST(ConsoleMock, test_init_console_calls_initscr)
 	mock().expectOneCall("initscr");
 	mock().expectOneCall("cbreak").andReturnValue(0);
 	mock().expectOneCall("noecho").andReturnValue(0);
-	mock().expectOneCall("keypad").withParameter("w", stdscr).withBoolParameter("flag", true).andReturnValue(0);
 	mock().expectOneCall("nodelay").withParameter("w", stdscr).withBoolParameter("flag", true).andReturnValue(0);
 	init_console();
 	mock().checkExpectations();
@@ -244,12 +233,47 @@ TEST(ConsoleMock, test_text_at_call_mvprintw)
 {
 	init_console();
 	mock().enable();
+
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", 0).
-		withIntParameter("x", 0).
+		withIntParameter("y", 25).
+		withIntParameter("x", 50).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
-	text_at((char*)"hello", -0.5, -0.5);
+	text_at((char*)"hello", 0., 0., BLUE_ON_BLACK, LEFT);
+	mock().checkExpectations();
+	mock().clear();
+
+	mock().expectOneCall("mvprintw").
+		withIntParameter("y", 25).
+		withIntParameter("x", 48).
+		withStringParameter("fmt", "%s").
+		withStringParameter("s", "hello");
+	text_at((char*)"hello", 0., 0., BLUE_ON_BLACK, CENTER);
+	mock().checkExpectations();
+	mock().clear();
+
+	mock().expectOneCall("mvprintw").
+		withIntParameter("y", 25).
+		withIntParameter("x", 45).
+		withStringParameter("fmt", "%s").
+		withStringParameter("s", "hello");
+	text_at((char*)"hello", 0., 0., BLUE_ON_BLACK, RIGHT);
+	mock().checkExpectations();
+	mock().clear();
+
+	mock().disable();
+}
+
+TEST(ConsoleMock, test_rect_at_call_mvprintw)
+{
+	init_console();
+	mock().enable();
+	mock().expectOneCall("mvprintw").
+		withIntParameter("y", 25).
+		withIntParameter("x", 50).
+		withStringParameter("fmt", "%s").
+		withStringParameter("s", " ");
+	rect_at(0.01, 0.02, 0., 0., RED_ON_BLACK);
 	mock().checkExpectations();
 	mock().disable();
 }

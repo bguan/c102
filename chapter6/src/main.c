@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <ncurses.h>
-
-#include "console.h"
 #include "game.h"
+#include "console.h"
 
 #define MIN_WIDTH 10
 #define MIN_HEIGHT 10
@@ -24,7 +23,7 @@ int main() {
 		return 1;
 	}
 
-	text_at("Hello Ball!", -.05, .45);
+	text_at("Hello Ball!", 0., 0.45, BLUE_ON_BLACK, CENTER);
 
 	float rad = 0.0;
 	for (;;)
@@ -37,8 +36,8 @@ int main() {
 		} 
 		else
 		{
-			circle_at(rad, 0.0, 0.0);
-			rect_at(rad/2, rad/4, 0.0, 0.0);
+			circle_at(rad, 0.0, 0.0, GREEN_ON_BLACK);
+			rect_at(rad/2, rad/4, 0.0, 0.0, RED_ON_BLACK);
 		}
 		rad = (rad > 0.4 ? 0.0 : rad + 0.00001);
 	}

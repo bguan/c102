@@ -20,6 +20,15 @@
  * velocity is also a float, e.g. vx of -1 means horizontal speed
  * traveling to the left can cross the screen in 1 second.
  */
+typedef enum
+{
+    WHITE_ON_BLACK = 1,
+    RED_ON_BLACK = 2,
+    GREEN_ON_BLACK = 3,
+    BLUE_ON_BLACK = 4
+} CONSOLE_COLOR;
+
+typedef enum { LEFT, CENTER, RIGHT } CONSOLE_TEXT_ALIGN;
 
 #define CONSOLE_FONT_ASPECT 0.5 // width to height
 
@@ -82,17 +91,17 @@ int to_dev_height(float norm_y);
 /**
  * @brief: draw text string starting at x, y for next round of render
  */
-void text_at(char *str, float x, float y);
+void text_at(char *str, float x, float y, CONSOLE_COLOR c, CONSOLE_TEXT_ALIGN align);
 
 /**
  * @brief: draw circle centered at x, y for next round of render
  */
-void circle_at(float radius, float x, float y);
+void circle_at(float radius, float x, float y, CONSOLE_COLOR c);
 
 /**
  * @brief: draw width height rectangle centered at x, y for next render
  */
-void rect_at(float width, float height, float x, float y);
+void rect_at(float width, float height, float x, float y, CONSOLE_COLOR c);
 
 /**
  * @brief: clear area from top left to bottom right for next render
