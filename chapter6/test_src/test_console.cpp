@@ -56,6 +56,12 @@ int nodelay(WINDOW* w, bool flag)
 		returnIntValue();
 }
 
+// Mock ncurses.h curs_set() call
+int curs_set(int viz)
+{
+	return mock().actualCall("curs_set").withParameter("viz", viz).returnIntValue();
+}
+
 // Mock ncurses.h endwin() call
 int endwin()
 {
@@ -96,6 +102,7 @@ TEST(ConsoleMock, test_init_console_calls_initscr)
 	mock().expectOneCall("cbreak").andReturnValue(0);
 	mock().expectOneCall("noecho").andReturnValue(0);
 	mock().expectOneCall("nodelay").withParameter("w", stdscr).withBoolParameter("flag", true).andReturnValue(0);
+	mock().expectOneCall("curs_set").withParameter("viz", 0).andReturnValue(0);
 	init_console();
 	mock().checkExpectations();
 	mock().disable();
