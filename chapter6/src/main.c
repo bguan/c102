@@ -25,7 +25,7 @@ int main() {
 
 	text_at("Hello Ball!", 0., 0.45, BLUE_ON_BLACK, CENTER);
 
-	float rad = 0.0;
+	double rad = 0.0;
 	for (;;)
 	{
 		char c = key_pressed();
@@ -53,7 +53,7 @@ int main() {
 		{
 			char c = key_pressed();
 			clock_t now = clock();
-			float elapsed_secs = (now - tstmp)/CLOCKS_PER_SEC;
+			double elapsed_secs = (now - tstmp)/CLOCKS_PER_SEC;
 			tstmp = now;
 			update_game(g, c, elapsed_secs);
 			render();

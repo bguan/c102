@@ -5,10 +5,10 @@
 
 extern "C"
 {
-	#include "console.h"
+	#include "../include/console.h"
 }
 
-TEST_GROUP(ConsoleMock){
+TEST_GROUP(ConsoleTests){
 	void setup()
 	{
 		// make sure mocks are disabled by default, i.e. tests that use mock must explicitly enable it
@@ -21,8 +21,11 @@ TEST_GROUP(ConsoleMock){
 	}
 };
 
-static const int _MOCK_LINES = 50;
-static const int _MOCK_COLS = 100;
+/**
+ * Mock console is 10x5 for ease of testing and mental math 
+ */
+static const int _MOCK_LINES = 5;
+static const int _MOCK_COLS = 10;
 
 // Mock ncurses.h initscr() call
 WINDOW* initscr()
@@ -94,8 +97,14 @@ int mvprintw(int y, int x, const char* fmt, ...)
 	return mock().returnIntValueOrDefault(0);
 }
 
+// Mock ncurses.h beep()
+int beep()
+{
+	return mock().actualCall("beep").returnIntValueOrDefault(0);
+}
+
 // mock to check init_console calls ncurses initscr and getmaxyx
-TEST(ConsoleMock, test_init_console_calls_initscr)
+TEST(ConsoleTests, test_init_console_calls_initscr)
 {
 	mock().enable();
 	mock().expectOneCall("initscr");
@@ -109,7 +118,7 @@ TEST(ConsoleMock, test_init_console_calls_initscr)
 }
 
 
-TEST(ConsoleMock, test_end_console_calls_endwin)
+TEST(ConsoleTests, test_end_console_calls_endwin)
 {
 	init_console();
 	mock().enable();
@@ -119,7 +128,7 @@ TEST(ConsoleMock, test_end_console_calls_endwin)
 	mock().disable();
 }
 
-TEST(ConsoleMock, test_get_dev_width_return_mock_value)
+TEST(ConsoleTests, test_get_dev_width_return_mock_value)
 {
 	init_console();
 	int w = get_dev_width();
@@ -127,7 +136,7 @@ TEST(ConsoleMock, test_get_dev_width_return_mock_value)
 	CHECK_EQUAL(_MOCK_COLS, w);
 }
 
-TEST(ConsoleMock, test_get_dev_height_return_mock_value)
+TEST(ConsoleTests, test_get_dev_height_return_mock_value)
 {
 	init_console();
 	int h = get_dev_height();
@@ -135,15 +144,15 @@ TEST(ConsoleMock, test_get_dev_height_return_mock_value)
 	CHECK_EQUAL(_MOCK_LINES, h);
 }
 
-TEST(ConsoleMock, test_get_dev_aspect_from_mock_values)
+TEST(ConsoleTests, test_get_dev_aspect_from_mock_values)
 {
 	init_console();
-	float a = get_dev_aspect();
+	double a = get_dev_aspect();
 
-	DOUBLES_EQUAL(CONSOLE_FONT_ASPECT * _MOCK_COLS/_MOCK_LINES, a, 0.01);
+	DOUBLES_EQUAL(CONS_FONT_ASPECT * _MOCK_COLS/_MOCK_LINES, a, 0.01);
 }
 
-TEST(ConsoleMock, test_key_pressed_call_wgetch)
+TEST(ConsoleTests, test_key_pressed_call_wgetch)
 {
 	init_console();
 	mock().enable();
@@ -155,7 +164,7 @@ TEST(ConsoleMock, test_key_pressed_call_wgetch)
 	CHECK_EQUAL('?', k);
 }
 
-TEST(ConsoleMock, test_to_dev_x_multi_cases)
+TEST(ConsoleTests, test_to_dev_x_multi_cases)
 {
 	init_console();
 
@@ -175,7 +184,7 @@ TEST(ConsoleMock, test_to_dev_x_multi_cases)
 	CHECK_EQUAL(_MOCK_COLS, bound_right_dev_x);
 }
 
-TEST(ConsoleMock, test_to_dev_y_multi_cases)
+TEST(ConsoleTests, test_to_dev_y_multi_cases)
 {
 	init_console();
 
@@ -196,7 +205,7 @@ TEST(ConsoleMock, test_to_dev_y_multi_cases)
 }
 
 
-TEST(ConsoleMock, test_to_dev_width_multi_cases)
+TEST(ConsoleTests, test_to_dev_width_multi_cases)
 {
 	init_console();
 
@@ -216,7 +225,7 @@ TEST(ConsoleMock, test_to_dev_width_multi_cases)
 	CHECK_EQUAL(_MOCK_COLS, bound_hi_dev_wth);
 }
 
-TEST(ConsoleMock, test_to_dev_height_multi_cases)
+TEST(ConsoleTests, test_to_dev_height_multi_cases)
 {
 	init_console();
 
@@ -236,51 +245,107 @@ TEST(ConsoleMock, test_to_dev_height_multi_cases)
 	CHECK_EQUAL(_MOCK_LINES, bound_hi_dev_ht);
 }
 
-TEST(ConsoleMock, test_text_at_call_mvprintw)
+TEST(ConsoleTests, test_text_at_call_mvprintw)
 {
+	char hello[] = "hello";
+	int len_hello = strlen(hello);
+
 	init_console();
 	mock().enable();
 
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", 25).
-		withIntParameter("x", 50).
+		withIntParameter("y", _MOCK_LINES/2).
+		withIntParameter("x", _MOCK_COLS/2).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
-	text_at((char*)"hello", 0., 0., BLUE_ON_BLACK, LEFT);
+	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, LEFT);
 	mock().checkExpectations();
 	mock().clear();
 
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", 25).
-		withIntParameter("x", 48).
+		withIntParameter("y", _MOCK_LINES/2).
+		withIntParameter("x", _MOCK_COLS/2 - len_hello/2).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
-	text_at((char*)"hello", 0., 0., BLUE_ON_BLACK, CENTER);
+	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, CENTER);
 	mock().checkExpectations();
 	mock().clear();
 
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", 25).
-		withIntParameter("x", 45).
+		withIntParameter("y", _MOCK_LINES/2).
+		withIntParameter("x", _MOCK_COLS/2 - len_hello).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
-	text_at((char*)"hello", 0., 0., BLUE_ON_BLACK, RIGHT);
+	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, RIGHT);
 	mock().checkExpectations();
 	mock().clear();
 
 	mock().disable();
 }
 
-TEST(ConsoleMock, test_rect_at_call_mvprintw)
+TEST(ConsoleTests, test_rect_at_call_mvprintw_at_various_pos)
 {
 	init_console();
 	mock().enable();
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", 25).
-		withIntParameter("x", 50).
+		withIntParameter("y", _MOCK_LINES/2).
+		withIntParameter("x", _MOCK_COLS/2).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", " ");
-	rect_at(0.01, 0.02, 0., 0., RED_ON_BLACK);
+	rect_at(0.1, 0.2, 0., 0., RED_ON_BLACK);
+	mock().checkExpectations();
+	mock().clear();
+
+	mock().expectOneCall("mvprintw").
+		withIntParameter("y", _MOCK_LINES).
+		withIntParameter("x", _MOCK_COLS).
+		withStringParameter("fmt", "%s").
+		withStringParameter("s", " ");
+	rect_at(0.1, 0.2, 1., 1., RED_ON_BLACK);
+	mock().checkExpectations();
+	mock().clear();
+
+	mock().expectOneCall("mvprintw").
+		withIntParameter("y", 0).
+		withIntParameter("x", 0).
+		withStringParameter("fmt", "%s").
+		withStringParameter("s", " ");
+	rect_at(0.1, 0.2, -1., -1., RED_ON_BLACK);
+	mock().checkExpectations();
+	mock().disable();
+}
+
+TEST(ConsoleTests, test_clear_area_call_mvprintw_whole_screen)
+{
+	char spaces[_MOCK_COLS+1];
+	for(int cx = 0; cx < _MOCK_COLS; cx++)
+	{
+		spaces[cx] = ' ';
+	}
+	spaces[_MOCK_COLS] = '\0';
+
+	init_console();
+	mock().enable();
+
+	for(int cy = 0; cy < _MOCK_LINES; cy++)
+	{
+		mock().expectOneCall("mvprintw").
+			withIntParameter("y", cy).
+			withIntParameter("x", 0).
+			withStringParameter("fmt", "%s").
+			withStringParameter("s", spaces);
+	}
+	clear_area(-1., -1., 1., 1.);
+	mock().checkExpectations();
+	mock().disable();
+}
+
+TEST(ConsoleTests, test_console_beep_call_beep)
+{
+	init_console();
+	mock().enable();
+	mock().expectOneCall("beep").andReturnValue(0);
+	console_beep();
 	mock().checkExpectations();
 	mock().disable();
 }

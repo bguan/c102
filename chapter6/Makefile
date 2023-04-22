@@ -13,21 +13,21 @@ BLD_DIR = build
 TEST_SRC_DIR = test_src
 TEST_BLD_DIR = test_build
 
+# the executables for run & test, as top level build targets
+MAIN = main
+TEST_MAIN = test_main
+
 # use wildcard to find all .c files under source directory
-ALL_SRC = $(wildcard $(SRC_DIR)/*.c)
+ALL_SRC = $(filter-out $(SRC_DIR)/$(MAIN).c, $(wildcard $(SRC_DIR)/*.c))
 
 # use wildcard to find all .cpp files under test source directory
-ALL_TEST_SRC = $(wildcard $(TEST_SRC_DIR)/*.cpp)
+ALL_TEST_SRC = $(filter-out $(TEST_SRC_DIR)/$(TEST_MAIN).cpp, $(wildcard $(TEST_SRC_DIR)/*.cpp))
 
 # to get all runtime objects, substitude build for src in path, while changing suffix from .c to .o
 ALL_OBJ = $(subst $(SRC_DIR), $(BLD_DIR), $(ALL_SRC:.c=.o))
 
 # to get all test time objects, substitude test_build for test_src in path, while changing suffix from .cpp to .o
-ALL_TEST_OBJ = $(subst $(TEST_SRC_DIR), $(TEST_BLD_DIR), $(ALL_TEST_SRC:.cpp=.o)) $(filter-out $(BLD_DIR)/main.o, $(ALL_OBJ))
-
-# the executables for run & test, as top level build targets
-EXE = $(BLD_DIR)/main
-TEST_EXE = $(TEST_BLD_DIR)/test_main
+ALL_TEST_OBJ = $(ALL_OBJ) $(subst $(TEST_SRC_DIR), $(TEST_BLD_DIR), $(ALL_TEST_SRC:.cpp=.o))
 
 # flags for C, C++ compiler and linker for runtime and test time
 CFLAGS = -g -Wall -I$(INCL_DIR)
@@ -37,7 +37,7 @@ TEST_LDFLAGS = $(LDFLAGS) -lCppUTest -lCppUTestExt
 
 
 # Rules for Make targets
-all: $(EXE) 
+all: $(BLD_DIR)/$(MAIN) 
 
 $(BLD_DIR):
 	mkdir -p $(BLD_DIR)
@@ -45,17 +45,17 @@ $(BLD_DIR):
 $(TEST_BLD_DIR): 
 	mkdir -p $(TEST_BLD_DIR)
  
-$(EXE): $(BLD_DIR) $(ALL_OBJ)
-	$(CC) $(ALL_OBJ) -o $@ $(LDFLAGS) 
+$(BLD_DIR)/$(MAIN): $(BLD_DIR) $(ALL_OBJ)
+	$(CC) $(CFLAGS) $(ALL_OBJ) $(SRC_DIR)/$(MAIN).c -o $@ $(LDFLAGS) 
 
-run: $(EXE)
-	$(EXE) 
+run: $(BLD_DIR)/$(MAIN)
+	$(BLD_DIR)/$(MAIN) 
 
-$(TEST_EXE): $(BLD_DIR) $(TEST_BLD_DIR) $(ALL_TEST_OBJ)
-	$(CPP) $(ALL_TEST_OBJ) -o $@ $(TEST_LDFLAGS) 
+$(TEST_BLD_DIR)/$(TEST_MAIN): $(BLD_DIR) $(TEST_BLD_DIR) $(ALL_TEST_OBJ)
+	$(CPP) $(CPPFLAGS) $(ALL_TEST_OBJ) $(TEST_SRC_DIR)/$(TEST_MAIN).cpp -o $@ $(TEST_LDFLAGS) 
 
-test: $(TEST_EXE)
-	$(TEST_EXE) -v 
+test: $(TEST_BLD_DIR)/$(TEST_MAIN)
+	$(TEST_BLD_DIR)/$(TEST_MAIN) -v 
 
 $(BLD_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CPPFLAGS) -c $^ -o $@
@@ -65,4 +65,3 @@ $(TEST_BLD_DIR)/%.o: $(TEST_SRC_DIR)/%.cpp
 
 clean:
 	rm -fr $(BLD_DIR) $(TEST_BLD_DIR)
-	rm -fr .vscode/*.o .vscode/*.dSYM .vscode/*main

@@ -12,7 +12,7 @@ void start_game(GAME* g)
 	// TODO: impl this
 }
 
-void update_game(GAME* g, char input, float dts)
+void update_game(GAME* g, char input, double dts)
 {
 	// TODO: impl this
 }

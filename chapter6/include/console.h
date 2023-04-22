@@ -13,11 +13,11 @@
  * character based terminal of say 80 chars by 25 lines to
  * high resolution graphical window of thousands by thousands of dots
  *
- * Normalized coordinates are floats. 
+ * Normalized coordinates are doubles. 
  * When used, device coordinates are unsigned ints.
  *
- * Using normalized coordinates and time unit of seconds in float,
- * velocity is also a float, e.g. vx of -1 means horizontal speed
+ * Using normalized coordinates and time unit of seconds in double,
+ * velocity is also a double, e.g. vx of -1 means horizontal speed
  * traveling to the left can cross the screen in 1 second.
  */
 typedef enum
@@ -26,11 +26,16 @@ typedef enum
     RED_ON_BLACK = 2,
     GREEN_ON_BLACK = 3,
     BLUE_ON_BLACK = 4
-} CONSOLE_COLOR;
+} CONS_COLOR;
 
-typedef enum { LEFT, CENTER, RIGHT } CONSOLE_TEXT_ALIGN;
+/**
+ * defines how text is aligned wrt to a position 
+ */
+typedef enum { LEFT, CENTER, RIGHT } CONS_TXT_ALIGN;
 
-#define CONSOLE_FONT_ASPECT 0.5 // width to height
+#define CONS_FONT_ASPECT 0.5 // width to height
+
+#define NORM_MIN_DIFF 0.001 // threshhold for normalized coord diff
 
 /**
  * @brief: initialize the console, i.e. the terminal 
@@ -47,21 +52,21 @@ void end_console();
  *
  * In the case of terminal, max chars per line
  */
-int get_dev_width();
+unsigned int get_dev_width();
 
 /**
  * @brief: get the console device vertical resolution
  *
  * In the case of terminal, max lines per screen
  */
-int get_dev_height();
+unsigned int get_dev_height();
 
 /**
  * @brief: get the console estimatedd aspect ratio i.e. width:height
  *
  * In the case of terminal, (estimated letter width:height) x COLS / LINES
  */
-float get_dev_aspect();
+double get_dev_aspect();
 
 /**
  * @brief: char corresponding to current key pressed, 0 if none
@@ -71,41 +76,46 @@ int key_pressed();
 /**
  * @brief: convert norm x to device x pos
  */
-int to_dev_x(float norm_x);
+int to_dev_x(double norm_x);
 
 /**
  * @brief: convert norm y to device y pos
  */
-int to_dev_y(float norm_y);
+int to_dev_y(double norm_y);
 
 /**
  * @brief: convert norm width to device width
  */
-int to_dev_width(float norm_x);
+unsigned int to_dev_width(double norm_wth);
 
 /**
- * @brief: convert norm height to device x height
+ * @brief: convert norm height to device height
  */
-int to_dev_height(float norm_y);
+unsigned int to_dev_height(double norm_hgt);
 
 /**
  * @brief: draw text string starting at x, y for next round of render
  */
-void text_at(char *str, float x, float y, CONSOLE_COLOR c, CONSOLE_TEXT_ALIGN align);
+void text_at(char *str, double x, double y, CONS_COLOR c, CONS_TXT_ALIGN align);
 
 /**
  * @brief: draw circle centered at x, y for next round of render
  */
-void circle_at(float radius, float x, float y, CONSOLE_COLOR c);
+void circle_at(double radius, double x, double y, CONS_COLOR c);
 
 /**
  * @brief: draw width height rectangle centered at x, y for next render
  */
-void rect_at(float width, float height, float x, float y, CONSOLE_COLOR c);
+void rect_at(double width, double height, double x, double y, CONS_COLOR c);
 
 /**
  * @brief: clear area from top left to bottom right for next render
  */
-void clear_area(float left_x, float top_y, float right_x, float bot_y);
+void clear_area(double left_x, double top_y, double right_x, double bot_y);
+
+/**
+ * @brief: sound an audible beep
+ */
+void console_beep();
 
 #endif

@@ -1,19 +1,51 @@
 #ifndef PAD_H
 #define PAD_H
 
-#define MAX_SPEED 1
+#include "console.h"
 
+#define PAD_SPEED 0.5
+
+#define BOT_PAD_COLOR BLUE_ON_BLACK
+#define TOP_PAD_COLOR RED_ON_BLACK
+
+/**
+ * Data structure holding the pad's state with its:
+ *  - w, h width and height
+ *  - x, y position in normalized coordinates
+ *  - v velocity in x axis in normalized coord/s 
+*/
 typedef struct {
-	float width, height, x, y, velocity;
+	double w, h, x, y, v;
 } PAD;
 
-PAD* init_paddle(float width, float height, float x, float y, float velocity);
+/**
+ * Initialize a paddle
+ */
+PAD* init_pad(double w, double h, double x, double y, double v);
 
-void free_paddle(PAD* p);
+/*
+ * Clear screen from pad and free memory used by Pad p.
+ */
+void dispose_pad(PAD* p);
 
-void update_paddle(PAD* p, float dts);
+/*
+ * update pad based on current pos and velocity after elapsed secs
+ */
+void update_pad(PAD* p, double elapsed_secs);
 
-void go_left(PAD* p);
-void go_right(PAD* p);
+/*
+ * changed velocity of pad to 0
+ */
+void pad_stop(PAD* p);
+
+/*
+ * changed velocity of pad to go left, only if dir is LEFT_RIGHT
+ */
+void pad_go_left(PAD* p);
+
+/*
+ * changed velocity of pad to go right, only if dir is LEFT_RIGHT
+ */
+void pad_go_right(PAD* p);
 
 #endif

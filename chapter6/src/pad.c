@@ -1,32 +1,77 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+#include "console.h"
 #include "pad.h"
 
-PAD* init_paddle(float width, float height, float x, float y, float velocity)
+CONS_COLOR pick_color(PAD* p)
 {
-	// TODO: impl this
-	return NULL;
+	return p == NULL || p->y < 0 ? TOP_PAD_COLOR : BOT_PAD_COLOR;
 }
 
-void free_paddle(PAD* p)
+PAD* init_pad(double w, double h, double x, double y, double v)
 {
-	// TODO: impl this
-	return;
+	PAD* p = malloc(sizeof(PAD));
+	if (p == NULL)
+	{
+		perror("Failed to allocate memory for PAD!");
+		return NULL;
+	}
+
+	p->w = w;
+	p->h = h;
+	p->x = x;
+	p->y = y;
+	p->v = v;
+
+	rect_at(w, h, x, y, pick_color(p));
+
+	return p;
 }
 
-void update_paddle(PAD* p, float elapsed_secs)
+void dispose_pad(PAD* p)
 {
-	// TODO: impl this
-	return;
+	if (p == NULL) return;
+
+	clear_area(p->x - p->w/2, p->y - p->h/2, p->x + p->w/2, p->y + p->h/2);
+
+	free(p);
 }
 
-void go_left(PAD* p)
+void update_pad(PAD* p, double elapsed_secs)
 {
-	// TODO: impl this
-	return;
+	double new_x = p->x + p->v * elapsed_secs;
+
+	// if there's meaningful diff btw old and new x, clear & redraw
+	if (fabs(new_x - p->x) > NORM_MIN_DIFF) 
+	{
+		clear_area(p->x - p->w/2, p->y - p->h/2, p->x + p->w/2, p->y + p->h/2);
+		p->x = new_x;
+		rect_at(p->w, p->h, p->x, p->y, pick_color(p));
+	}
 }
 
-void go_right(PAD* p)
+void pad_stop(PAD* p)
 {
-	// TODO: impl this
-	return;
+	if (p != NULL)
+	{
+		p->v = 0.;
+	}
+}
+
+void pad_go_left(PAD* p)
+{
+	if (p != NULL)
+	{
+		p->v = -PAD_SPEED;
+	}
+}
+
+void pad_go_right(PAD* p)
+{
+	if (p != NULL)
+	{
+		p->v = PAD_SPEED;
+	}
 }

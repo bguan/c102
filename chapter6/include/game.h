@@ -13,7 +13,7 @@ typedef struct {
 
 GAME* init_game();
 void start_game(GAME* g);
-void update_game(GAME* g, char input, float elapsed_secs);
+void update_game(GAME* g, char input, double elapsed_secs);
 bool is_over(GAME* g);
 void free_game(GAME* g);
 
