@@ -1,10 +1,11 @@
-#include <string.h>
+#include "CppUTest/CommandLineTestRunner.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
+#include <string.h>
 
 extern "C"
 {
-	#include "str_array.h"
+	#include "../include/str_array.h"
 }
 
 TEST_GROUP(Common){
@@ -179,4 +180,9 @@ TEST(Common, test_insert_str_array)
 	CHECK_EQUAL(tres, sa->strs[2]);
 
 	free_str_array(sa);
+}
+
+int main(int ac, char** av)
+{
+    return CommandLineTestRunner::RunAllTests(ac, av);
 }

@@ -34,7 +34,7 @@
                 "-g",
                 "-Wall",
                 "-I${workspaceFolder}/include",
-                "${workspaceFolder}/test_src/*.cpp",
+                "${file}",
                 "${workspaceFolder}/.vscode/*.o",
                 "-o",
                 "${workspaceFolder}/.vscode/${fileBasenameNoExtension}",
