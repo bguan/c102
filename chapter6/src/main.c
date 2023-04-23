@@ -33,6 +33,7 @@ int main() {
 
 		if (rad < 0.001) {
 			clear_area(-.4, -.4, .4, .4);
+			console_beep();
 		} 
 		else
 		{

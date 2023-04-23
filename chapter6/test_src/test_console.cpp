@@ -1,3 +1,4 @@
+#include "CppUTest/CommandLineTestRunner.h"
 #include <CppUTest/TestHarness.h>
 #include <CppUTestExt/MockSupport.h>
 #include <ncurses.h>
@@ -348,4 +349,9 @@ TEST(ConsoleTests, test_console_beep_call_beep)
 	console_beep();
 	mock().checkExpectations();
 	mock().disable();
+}
+
+int main(int ac, char** av)
+{
+    return CommandLineTestRunner::RunAllTests(ac, av);
 }

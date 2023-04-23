@@ -116,6 +116,8 @@ void repeat_char(char * buffer, char c, int num)
 	buffer[num] = '\0';
 }
 
+/** marking circle_at as weak to allow mocking */
+__attribute__((weak))
 void circle_at(double radius, double x, double y, CONS_COLOR c)
 {
 	int rad_x = to_dev_width(radius) / _console_aspect;
@@ -153,6 +155,8 @@ void circle_at(double radius, double x, double y, CONS_COLOR c)
 	attroff(COLOR_PAIR(c));
 }
 
+/** marking rect_at as weak to allow mocking */
+__attribute__((weak))
 void rect_at(double width, double height, double x, double y, CONS_COLOR c)
 {
 	int dev_x = to_dev_x(bound_x(x));
@@ -178,6 +182,8 @@ void console_beep()
 	beep();
 }
 
+/** marking clear_area as weak to allow mocking */
+__attribute__((weak))
 void clear_area(double left_x, double top_y, double right_x, double bot_y)
 {
 	int dev_left_x = to_dev_x(bound_x(left_x));

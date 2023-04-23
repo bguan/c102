@@ -1,9 +1,11 @@
+#include "CppUTest/CommandLineTestRunner.h"
 #include <CppUTest/TestHarness.h>
 #include <CppUTestExt/MockSupport.h>
 #include <stdarg.h>
 
 extern "C"
 {
+	#include "../include/console.h"
 	#include "../include/ball.h"
 }
 
@@ -20,6 +22,27 @@ TEST_GROUP(BallTests){
 	}
 };
 
+
+// Mock console.h circle_at()
+void circle_at(double rad, double x, double y, CONS_COLOR c)
+{
+	mock().actualCall("circle_at")
+		.withDoubleParameter("rad", rad)
+		.withDoubleParameter("x", x)
+		.withDoubleParameter("y", y)
+		.withIntParameter("c", c);
+}
+
+// Mock console.h clear_area()
+void clear_area(double left_x, double top_y, double right_x, double bot_y)
+{
+	mock().actualCall("clear_area")
+		.withDoubleParameter("left_x", left_x)
+		.withDoubleParameter("top_y", top_y)
+		.withDoubleParameter("right_x", right_x)
+		.withDoubleParameter("bot_y", bot_y);
+}
+
 TEST(BallTests, test_init_ball_calls_circle_at)
 {
 	mock().enable();
@@ -28,7 +51,7 @@ TEST(BallTests, test_init_ball_calls_circle_at)
 		.withDoubleParameter("x", 0.)
 		.withDoubleParameter("y", 0.)
 		.withIntParameter("c", BALL_COLOR);
-		
+
 	BALL* b = init_ball(.01, 0., 0., 0., 0.);
 
 	CHECK(b != NULL);
@@ -107,6 +130,7 @@ TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_X)
 
 	mock().checkExpectations();
 	mock().clear();
+	mock().disable();
 
 	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.0, b->y, NORM_MIN_DIFF);
@@ -127,12 +151,10 @@ TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_X)
 	DOUBLES_EQUAL(.1, b->vx, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.0, b->vy, NORM_MIN_DIFF);
 
-	mock().disable();
-
 	dispose_ball(b);
 }
 
-TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_y)
+TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_Y)
 {
 	BALL* b = init_ball(.01, .0, .0, .0, .2); // moving in y axis only
 
@@ -378,4 +400,9 @@ TEST(BallTests, test_bounce_if_touching_right)
 	DOUBLES_EQUAL(.25, b->vy, NORM_MIN_DIFF); 
 
 	dispose_ball(b);
+}
+
+int main(int ac, char** av)
+{
+    return CommandLineTestRunner::RunAllTests(ac, av);
 }
