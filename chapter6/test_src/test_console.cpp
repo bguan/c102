@@ -3,6 +3,7 @@
 #include <CppUTestExt/MockSupport.h>
 #include <ncurses.h>
 #include <stdarg.h>
+#include <string.h>
 
 extern "C"
 {
