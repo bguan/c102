@@ -18,6 +18,7 @@ MAIN = main
 
 # use wildcard to find all .c files under source directory
 ALL_SRC = $(wildcard $(SRC_DIR)/*.c)
+ALL_INC = $(wildcard $(INCL_DIR)/*.h)
 
 # use wildcard to find all .cpp files under test source directory
 ALL_TEST_SRC = $(wildcard $(TEST_SRC_DIR)/*.cpp)
@@ -47,18 +48,18 @@ $(TEST_BLD_DIR):
 $(BLD_DIR)/$(MAIN): $(BLD_DIR) $(ALL_OBJ)
 	$(CC) $(CFLAGS) $(ALL_OBJ) -o $@ $(LDFLAGS) 
 
-$(BLD_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(CPPFLAGS) -c $^ -o $@
+$(BLD_DIR)/%.o: $(SRC_DIR)/%.c $(ALL_INC)
+	$(CC) $(CPPFLAGS) -c $< -o $@
 
 run: $(BLD_DIR)/$(MAIN)
 	$(BLD_DIR)/$(MAIN) 
 
 test: $(BLD_DIR) $(TEST_BLD_DIR) $(ALL_TESTS)
+	for file in $(ALL_TESTS) ; do $$file ; done
 
-$(TEST_BLD_DIR)/%: $(TEST_SRC_DIR)/%.cpp $(NON_MAIN_OBJ)
+$(TEST_BLD_DIR)/%: $(TEST_SRC_DIR)/%.cpp $(NON_MAIN_OBJ) $(ALL_INC)
 	$(CPP) $(CPPFLAGS) $< $(NON_MAIN_OBJ) -o $@ $(TEST_LDFLAGS)
-	$@ -v
-
 
 clean:
 	rm -fr $(BLD_DIR) $(TEST_BLD_DIR)
+	rm -fr *.vscode/*.o *.vscode/*.dSYM .vscode/main* .vscode/test*

@@ -21,6 +21,7 @@ void init_console()
 	init_pair(RED_ON_BLACK, COLOR_BLACK, COLOR_RED);
 	init_pair(GREEN_ON_BLACK, COLOR_BLACK, COLOR_GREEN);
 	init_pair(BLUE_ON_BLACK, COLOR_BLACK, COLOR_BLUE);
+	init_pair(YELLOW_ON_BLACK, COLOR_BLACK, COLOR_YELLOW);
 
 	cbreak();
 	noecho();
@@ -93,15 +94,17 @@ unsigned int to_dev_height(double norm_y)
 	return floor(bound_height(norm_y) * _console_height);
 }
 
+/** marking text_area as weak to allow mocking */
+__attribute__((weak)) 
 void text_at(char *str, double x, double y, CONS_COLOR c, CONS_TXT_ALIGN align)
 {
 	attron(A_REVERSE | COLOR_PAIR(c));
 	int dev_y = to_dev_y(y);
 	int dev_x = to_dev_x(x);
 	int len = strlen(str);
-	if (align == RIGHT)
+	if (align == TXT_RIGHT)
 		dev_x -= len;
-	else if (align == CENTER)
+	else if (align == TXT_CENTER)
 		dev_x -= len / 2;
 	mvprintw(dev_y, dev_x, "%s", str);
 	attroff(A_REVERSE | COLOR_PAIR(c));
@@ -177,6 +180,8 @@ void rect_at(double width, double height, double x, double y, CONS_COLOR c)
 	attroff(COLOR_PAIR(c));
 }
 
+/** marking console_beep as weak to allow mocking */
+__attribute__((weak)) 
 void console_beep()
 {
 	beep();

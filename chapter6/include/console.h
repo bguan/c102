@@ -22,16 +22,17 @@
  */
 typedef enum
 {
-    WHITE_ON_BLACK = 1,
-    RED_ON_BLACK = 2,
-    GREEN_ON_BLACK = 3,
-    BLUE_ON_BLACK = 4
+	WHITE_ON_BLACK = 1,
+	RED_ON_BLACK = 2,
+	GREEN_ON_BLACK = 3,
+	BLUE_ON_BLACK = 4,
+	YELLOW_ON_BLACK = 5,
 } CONS_COLOR;
 
 /**
  * defines how text is aligned wrt to a position 
  */
-typedef enum { LEFT, CENTER, RIGHT } CONS_TXT_ALIGN;
+typedef enum { TXT_LEFT, TXT_CENTER, TXT_RIGHT } CONS_TXT_ALIGN;
 
 #define CONS_FONT_ASPECT 0.5 // width to height
 
@@ -92,6 +93,14 @@ unsigned int to_dev_width(double norm_wth);
  * @brief: convert norm height to device height
  */
 unsigned int to_dev_height(double norm_hgt);
+
+double bound_x(double norm_x);
+
+double bound_y(double norm_y);
+
+double bound_height(double norm_ht);
+
+double bound_width(double norm_wth);
 
 /**
  * @brief: draw text string starting at x, y for next round of render

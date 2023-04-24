@@ -180,7 +180,7 @@ TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_Y)
 	update_ball(b, 3.); // update after another sec
 
 	DOUBLES_EQUAL(.0, b->x, NORM_MIN_DIFF);
-	DOUBLES_EQUAL(1.0, b->y, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.5, b->y, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.0, b->vx, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
@@ -213,14 +213,14 @@ TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_x_y)
 	update_ball(b, 3.); // update after another sec
 
 	DOUBLES_EQUAL(-.5, b->x, NORM_MIN_DIFF);
-	DOUBLES_EQUAL(1.0, b->y, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.5, b->y, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(-.1, b->vx, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	dispose_ball(b);
 }
 
-TEST(BallTests, test_bounce_if_touching_top)
+TEST(BallTests, test_bounce_if_touching_top_wall)
 {
 	BALL* b = init_ball(.01, .0, .0, .1, -.2); // moving in x & y 
 
@@ -230,7 +230,7 @@ TEST(BallTests, test_bounce_if_touching_top)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after 1 sec
-	bool bounced = bounce_if_touching_top(b, -.5, .05);
+	bool bounced = bounce_if_touching_top_wall(b, -.5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
@@ -239,7 +239,7 @@ TEST(BallTests, test_bounce_if_touching_top)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_top(b, -.5, .05);
+	bounced = bounce_if_touching_top_wall(b, -.5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.2, b->x, NORM_MIN_DIFF);
@@ -248,7 +248,7 @@ TEST(BallTests, test_bounce_if_touching_top)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_top(b, -.5, .05);
+	bounced = bounce_if_touching_top_wall(b, -.5);
 
 	CHECK(bounced);
 	DOUBLES_EQUAL(.3, b->x, NORM_MIN_DIFF);
@@ -256,16 +256,13 @@ TEST(BallTests, test_bounce_if_touching_top)
 	// w/o bounce y would be -.6, -.1 more than -.5
 	DOUBLES_EQUAL(-.5, b->y, NORM_MIN_DIFF); 
 
-	// side spin added to ball's x velocity
-	DOUBLES_EQUAL(.15, b->vx, NORM_MIN_DIFF); 
-
 	// Y velocity reversed direction!
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF); 
 
 	dispose_ball(b);
 }
 
-TEST(BallTests, test_bounce_if_touching_bottom)
+TEST(BallTests, test_bounce_if_touching_bottom_wall)
 {
 	BALL* b = init_ball(.01, .0, .0, .1, .2); // moving in x & y 
 
@@ -275,7 +272,7 @@ TEST(BallTests, test_bounce_if_touching_bottom)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after 1 sec
-	bool bounced = bounce_if_touching_bottom(b, .5, .05);
+	bool bounced = bounce_if_touching_bottom_wall(b, .5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
@@ -284,7 +281,7 @@ TEST(BallTests, test_bounce_if_touching_bottom)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_bottom(b, .5, .05);
+	bounced = bounce_if_touching_bottom_wall(b, .5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.2, b->x, NORM_MIN_DIFF);
@@ -293,7 +290,7 @@ TEST(BallTests, test_bounce_if_touching_bottom)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_bottom(b, .5, .05);
+	bounced = bounce_if_touching_bottom_wall(b, .5);
 
 	CHECK(bounced);
 	DOUBLES_EQUAL(.3, b->x, NORM_MIN_DIFF);
@@ -301,16 +298,13 @@ TEST(BallTests, test_bounce_if_touching_bottom)
 	// w/o bounce y would be .6, .1 more than .5
 	DOUBLES_EQUAL(.5, b->y, NORM_MIN_DIFF); 
 
-	// side spin added to ball's x velocity
-	DOUBLES_EQUAL(.15, b->vx, NORM_MIN_DIFF);
-
 	// Y velocity reversed direction!
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF); 
 
 	dispose_ball(b);
 }
 
-TEST(BallTests, test_bounce_if_touching_left)
+TEST(BallTests, test_bounce_if_touching_left_wall)
 {
 	BALL* b = init_ball(.01, .0, .0, -.1, -.2); // moving in x & y 
 
@@ -320,7 +314,7 @@ TEST(BallTests, test_bounce_if_touching_left)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after 1 sec
-	bool bounced = bounce_if_touching_left(b, -.5, .05);
+	bool bounced = bounce_if_touching_left_wall(b, -.5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(-.1, b->x, NORM_MIN_DIFF);
@@ -329,7 +323,7 @@ TEST(BallTests, test_bounce_if_touching_left)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_left(b, -.5, .05);
+	bounced = bounce_if_touching_left_wall(b, -.5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(-.2, b->x, NORM_MIN_DIFF);
@@ -338,25 +332,22 @@ TEST(BallTests, test_bounce_if_touching_left)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 4.); // update after 4 more secs
-	bounced = bounce_if_touching_left(b, -.5, .05);
+	bounced = bounce_if_touching_left_wall(b, -.5);
 
 	CHECK(bounced);
 
 	// w/o bounce x would be -.6, -.1 more than -.5
 	DOUBLES_EQUAL(-.5, b->x, NORM_MIN_DIFF); 
 
-	DOUBLES_EQUAL(-1.2, b->y, NORM_MIN_DIFF); 
+	DOUBLES_EQUAL(-.5, b->y, NORM_MIN_DIFF); 
 
 	// x velocity reversed direction!
 	DOUBLES_EQUAL(.1, b->vx, NORM_MIN_DIFF);
 
-	// top spin added to y velocity  
-	DOUBLES_EQUAL(-.15, b->vy, NORM_MIN_DIFF); 
-
 	dispose_ball(b);
 }
 
-TEST(BallTests, test_bounce_if_touching_right)
+TEST(BallTests, test_bounce_if_touching_right_wall)
 {
 	BALL* b = init_ball(.01, .0, .0, .1, .2); // moving in x & y 
 
@@ -366,7 +357,7 @@ TEST(BallTests, test_bounce_if_touching_right)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after 1 sec
-	bool bounced = bounce_if_touching_right(b, .5, .05);
+	bool bounced = bounce_if_touching_right_wall(b, .5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
@@ -375,7 +366,7 @@ TEST(BallTests, test_bounce_if_touching_right)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_right(b, .5, .05);
+	bounced = bounce_if_touching_right_wall(b, .5);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.2, b->x, NORM_MIN_DIFF);
@@ -384,20 +375,17 @@ TEST(BallTests, test_bounce_if_touching_right)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 4.); // update after 4 more secs
-	bounced = bounce_if_touching_right(b, .5, .05);
+	bounced = bounce_if_touching_right_wall(b, .5);
 
 	CHECK(bounced);
 
 	// w/o bounce x would be .6, .1 more than .5
 	DOUBLES_EQUAL(.5, b->x, NORM_MIN_DIFF); 
 
-	DOUBLES_EQUAL(1.2, b->y, NORM_MIN_DIFF); 
+	DOUBLES_EQUAL(.5, b->y, NORM_MIN_DIFF); 
 
 	// x velocity reversed direction!
 	DOUBLES_EQUAL(-.1, b->vx, NORM_MIN_DIFF);
-
-	// top spin added to y velocity
-	DOUBLES_EQUAL(.25, b->vy, NORM_MIN_DIFF); 
 
 	dispose_ball(b);
 }

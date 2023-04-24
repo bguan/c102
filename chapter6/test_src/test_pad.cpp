@@ -157,7 +157,7 @@ TEST(PadTests, test_update_pad_moved_to_expected_spot_calls_clear_and_rect_at)
 
 	DOUBLES_EQUAL(.2, p->w, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.1, p->h, NORM_MIN_DIFF);
-	DOUBLES_EQUAL(0. + PAD_SPEED * 2.0, p->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.5, p->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(0.4, p->y, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(PAD_SPEED, p->v, NORM_MIN_DIFF);
 

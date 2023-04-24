@@ -21,7 +21,9 @@
         "tuple": "cpp",
         "variant": "cpp",
         "functional": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "cstdio": "c",
+        "*.tcc": "c"
     },
     "makefile.launchConfigurations": [
         {

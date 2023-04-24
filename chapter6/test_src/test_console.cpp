@@ -260,7 +260,7 @@ TEST(ConsoleTests, test_text_at_call_mvprintw)
 		withIntParameter("x", _MOCK_COLS/2).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
-	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, LEFT);
+	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, TXT_LEFT);
 	mock().checkExpectations();
 	mock().clear();
 
@@ -269,7 +269,7 @@ TEST(ConsoleTests, test_text_at_call_mvprintw)
 		withIntParameter("x", _MOCK_COLS/2 - len_hello/2).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
-	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, CENTER);
+	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, TXT_CENTER);
 	mock().checkExpectations();
 	mock().clear();
 
@@ -278,7 +278,7 @@ TEST(ConsoleTests, test_text_at_call_mvprintw)
 		withIntParameter("x", _MOCK_COLS/2 - len_hello).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
-	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, RIGHT);
+	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, TXT_RIGHT);
 	mock().checkExpectations();
 	mock().clear();
 

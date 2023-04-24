@@ -5,14 +5,14 @@
 #include "console.h"
 #include "pad.h"
 
-CONS_COLOR pick_color(PAD* p)
+CONS_COLOR pick_color(PAD *p)
 {
 	return p == NULL || p->y < 0 ? TOP_PAD_COLOR : BOT_PAD_COLOR;
 }
 
-PAD* init_pad(double w, double h, double x, double y, double v)
+PAD *init_pad(double w, double h, double x, double y, double v)
 {
-	PAD* p = malloc(sizeof(PAD));
+	PAD *p = malloc(sizeof(PAD));
 	if (p == NULL)
 	{
 		perror("Failed to allocate memory for PAD!");
@@ -30,29 +30,33 @@ PAD* init_pad(double w, double h, double x, double y, double v)
 	return p;
 }
 
-void dispose_pad(PAD* p)
+void dispose_pad(PAD *p)
 {
-	if (p == NULL) return;
+	if (p == NULL)
+		return;
 
-	clear_area(p->x - p->w/2, p->y - p->h/2, p->x + p->w/2, p->y + p->h/2);
+	clear_area(p->x - p->w / 2, p->y - p->h / 2, p->x + p->w / 2, p->y + p->h / 2);
 
 	free(p);
 }
 
-void update_pad(PAD* p, double elapsed_secs)
+void update_pad(PAD *p, double elapsed_secs)
 {
+	if (p == NULL)
+		return;
+
 	double new_x = p->x + p->v * elapsed_secs;
 
 	// if there's meaningful diff btw old and new x, clear & redraw
-	if (fabs(new_x - p->x) > NORM_MIN_DIFF) 
+	if (fabs(new_x - p->x) > NORM_MIN_DIFF)
 	{
-		clear_area(p->x - p->w/2, p->y - p->h/2, p->x + p->w/2, p->y + p->h/2);
-		p->x = new_x;
+		clear_area(p->x - p->w / 2, p->y - p->h / 2, p->x + p->w / 2, p->y + p->h / 2);
+		p->x = bound_x(new_x);
 		rect_at(p->w, p->h, p->x, p->y, pick_color(p));
 	}
 }
 
-void pad_stop(PAD* p)
+void pad_stop(PAD *p)
 {
 	if (p != NULL)
 	{
@@ -60,7 +64,7 @@ void pad_stop(PAD* p)
 	}
 }
 
-void pad_go_left(PAD* p)
+void pad_go_left(PAD *p)
 {
 	if (p != NULL)
 	{
@@ -68,7 +72,7 @@ void pad_go_left(PAD* p)
 	}
 }
 
-void pad_go_right(PAD* p)
+void pad_go_right(PAD *p)
 {
 	if (p != NULL)
 	{
