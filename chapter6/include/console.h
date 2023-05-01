@@ -36,7 +36,7 @@ typedef enum { TXT_LEFT, TXT_CENTER, TXT_RIGHT } CONS_TXT_ALIGN;
 
 #define CONS_FONT_ASPECT 0.5 // width to height
 
-#define NORM_MIN_DIFF 0.001 // threshhold for normalized coord diff
+#define NORM_MIN_DIFF 0.0001 // threshhold for normalized coord diff
 
 /**
  * @brief: initialize the console, i.e. the terminal 
@@ -126,5 +126,10 @@ void clear_area(double left_x, double top_y, double right_x, double bot_y);
  * @brief: sound an audible beep
  */
 void console_beep();
+
+/**
+ * @brief: refresh drawing the console
+*/
+void console_refresh();
 
 #endif

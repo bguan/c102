@@ -118,10 +118,10 @@ TEST(PadTests, test_update_pad_stationary_stays_same_spot_no_draw)
 
 TEST(PadTests, test_update_pad_moved_to_expected_spot_calls_clear_and_rect_at)
 {
-	PAD* p = init_pad(.2, .1, 0., .4, PAD_SPEED);
+	PAD* p = init_pad(.1, .1, 0., .4, PAD_SPEED);
 
 	// check initial state is as expected
-	DOUBLES_EQUAL(.2, p->w, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, p->w, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.1, p->h, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(0., p->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.4, p->y, NORM_MIN_DIFF);
@@ -131,14 +131,14 @@ TEST(PadTests, test_update_pad_moved_to_expected_spot_calls_clear_and_rect_at)
 
 	mock().expectOneCall("clear_area")
 		.withDoubleParameter("left_x", -.1)
-		.withDoubleParameter("top_y", .35)
+		.withDoubleParameter("top_y", .4 - .1)
 		.withDoubleParameter("right_x", .1)
-		.withDoubleParameter("bot_y", .45);
+		.withDoubleParameter("bot_y", .4 + .1);
 
 	mock().expectOneCall("rect_at")
-		.withDoubleParameter("w", .2)
+		.withDoubleParameter("w", .1)
 		.withDoubleParameter("h", .1)
-		.withDoubleParameter("x", PAD_SPEED)
+		.withDoubleParameter("x", PAD_SPEED - p->w/1.5)
 		.withDoubleParameter("y", .4)
 		.withIntParameter("c", BOT_PAD_COLOR);
 
@@ -147,17 +147,17 @@ TEST(PadTests, test_update_pad_moved_to_expected_spot_calls_clear_and_rect_at)
 	mock().checkExpectations();
 	mock().disable();
 
-	DOUBLES_EQUAL(.2, p->w, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, p->w, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.1, p->h, NORM_MIN_DIFF);
-	DOUBLES_EQUAL(0. + PAD_SPEED * 1.0, p->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(0. + PAD_SPEED * 1.0 - p->w/1.5, p->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(0.4, p->y, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(PAD_SPEED, p->v, NORM_MIN_DIFF);
 
 	update_pad(p, 1.);
 
-	DOUBLES_EQUAL(.2, p->w, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, p->w, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.1, p->h, NORM_MIN_DIFF);
-	DOUBLES_EQUAL(.5, p->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.5 - p->w/1.5, p->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(0.4, p->y, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(PAD_SPEED, p->v, NORM_MIN_DIFF);
 

@@ -6,6 +6,7 @@
 extern "C"
 {
 	#include "../include/console.h"
+	#include "../include/pad.h"
 	#include "../include/ball.h"
 }
 
@@ -115,10 +116,10 @@ TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_X)
 	mock().enable();
 
 	mock().expectOneCall("clear_area")
-		.withDoubleParameter("left_x", -.01)
-		.withDoubleParameter("top_y", -.01)
-		.withDoubleParameter("right_x", .01)
-		.withDoubleParameter("bot_y", .01);
+		.withDoubleParameter("left_x", -.02)
+		.withDoubleParameter("top_y", -.02)
+		.withDoubleParameter("right_x", .02)
+		.withDoubleParameter("bot_y", .02);
 
 	mock().expectOneCall("circle_at")
 		.withDoubleParameter("rad", 0.01)
@@ -222,7 +223,8 @@ TEST(BallTests, test_update_ball_moving_ball_moved_to_expected_spot_in_x_y)
 
 TEST(BallTests, test_bounce_if_touching_top_wall)
 {
-	BALL* b = init_ball(.01, .0, .0, .1, -.2); // moving in x & y 
+	double rad = .01;
+	BALL *b = init_ball(rad, .0, .0, .1, -.2); // moving in x & y
 
 	DOUBLES_EQUAL(.0, b->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.0, b->y, NORM_MIN_DIFF);
@@ -230,7 +232,7 @@ TEST(BallTests, test_bounce_if_touching_top_wall)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after 1 sec
-	bool bounced = bounce_if_touching_top_wall(b, -.5);
+	bool bounced = bounce_if_touching_top_wall(b, -.45);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
@@ -239,7 +241,7 @@ TEST(BallTests, test_bounce_if_touching_top_wall)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_top_wall(b, -.5);
+	bounced = bounce_if_touching_top_wall(b, -.45);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.2, b->x, NORM_MIN_DIFF);
@@ -248,13 +250,13 @@ TEST(BallTests, test_bounce_if_touching_top_wall)
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_top_wall(b, -.5);
+	bounced = bounce_if_touching_top_wall(b, -.45);
 
 	CHECK(bounced);
 	DOUBLES_EQUAL(.3, b->x, NORM_MIN_DIFF);
 	
-	// w/o bounce y would be -.6, -.1 more than -.5
-	DOUBLES_EQUAL(-.5, b->y, NORM_MIN_DIFF); 
+	// w/o bounce y would be -.6, -.1 more than -.45
+	DOUBLES_EQUAL(-.45 + rad, b->y, NORM_MIN_DIFF); 
 
 	// Y velocity reversed direction!
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF); 
@@ -264,7 +266,8 @@ TEST(BallTests, test_bounce_if_touching_top_wall)
 
 TEST(BallTests, test_bounce_if_touching_bottom_wall)
 {
-	BALL* b = init_ball(.01, .0, .0, .1, .2); // moving in x & y 
+	double rad = 0.01;
+	BALL *b = init_ball(rad, .0, .0, .1, .2); // moving in x & y
 
 	DOUBLES_EQUAL(.0, b->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.0, b->y, NORM_MIN_DIFF);
@@ -272,7 +275,7 @@ TEST(BallTests, test_bounce_if_touching_bottom_wall)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after 1 sec
-	bool bounced = bounce_if_touching_bottom_wall(b, .5);
+	bool bounced = bounce_if_touching_bottom_wall(b, .45);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
@@ -281,7 +284,7 @@ TEST(BallTests, test_bounce_if_touching_bottom_wall)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_bottom_wall(b, .5);
+	bounced = bounce_if_touching_bottom_wall(b, .45);
 
 	CHECK_FALSE(bounced);
 	DOUBLES_EQUAL(.2, b->x, NORM_MIN_DIFF);
@@ -290,13 +293,13 @@ TEST(BallTests, test_bounce_if_touching_bottom_wall)
 	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
 
 	update_ball(b, 1.); // update after another sec
-	bounced = bounce_if_touching_bottom_wall(b, .5);
+	bounced = bounce_if_touching_bottom_wall(b, .45);
 
 	CHECK(bounced);
 	DOUBLES_EQUAL(.3, b->x, NORM_MIN_DIFF);
 
-	// w/o bounce y would be .6, .1 more than .5
-	DOUBLES_EQUAL(.5, b->y, NORM_MIN_DIFF); 
+	// w/o bounce y would be .6, .1 more than .45
+	DOUBLES_EQUAL(.45 - rad, b->y, NORM_MIN_DIFF); 
 
 	// Y velocity reversed direction!
 	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF); 
@@ -386,6 +389,86 @@ TEST(BallTests, test_bounce_if_touching_right_wall)
 
 	// x velocity reversed direction!
 	DOUBLES_EQUAL(-.1, b->vx, NORM_MIN_DIFF);
+
+	dispose_ball(b);
+}
+
+TEST(BallTests, test_bounce_if_touching_top_pad)
+{
+	PAD *p = init_pad(.2, .1, 0., -.4, 1.);
+	BALL *b = init_ball(.1, .0, .0, .1, -.2); // moving in x & y
+
+	DOUBLES_EQUAL(.1, b->rad, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.0, b->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.0, b->y, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, b->vx, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
+
+	update_ball(b, 1.); // update after 1 sec
+	bool bounced = bounce_if_touching_pad(b, p);
+
+	CHECK_FALSE(bounced);
+	DOUBLES_EQUAL(.1, b->rad, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(-.2, b->y, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, b->vx, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
+
+	update_ball(b, 1.); // update after another sec
+	bounced = bounce_if_touching_pad(b, p);
+
+	CHECK_TRUE(bounced);
+	DOUBLES_EQUAL(.1, b->rad, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.2, b->x, NORM_MIN_DIFF);
+
+	// changed by bounce to boundary pad and ball
+	DOUBLES_EQUAL(-.25, b->y, NORM_MIN_DIFF); 
+
+	// changed by side spin
+	DOUBLES_EQUAL(.1 + SIDE_SPIN_FACTOR*p->v, b->vx, NORM_MIN_DIFF); 
+
+	// reversed by bounce
+	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
+
+	dispose_ball(b);
+}
+
+TEST(BallTests, test_bounce_if_touching_bottom_pad)
+{
+	PAD *p = init_pad(.2, .1, 0., .4, 1.);
+	BALL *b = init_ball(.1, .0, .0, .1, .2); // moving in x & y
+
+	DOUBLES_EQUAL(.1, b->rad, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.0, b->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.0, b->y, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, b->vx, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
+
+	update_ball(b, 1.); // update after 1 sec
+	bool bounced = bounce_if_touching_pad(b, p);
+
+	CHECK_FALSE(bounced);
+	DOUBLES_EQUAL(.1, b->rad, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, b->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.2, b->y, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.1, b->vx, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.2, b->vy, NORM_MIN_DIFF);
+
+	update_ball(b, 1.); // update after another sec
+	bounced = bounce_if_touching_pad(b, p);
+
+	CHECK_TRUE(bounced);
+	DOUBLES_EQUAL(.1, b->rad, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(.2, b->x, NORM_MIN_DIFF);
+
+	// changed by bounce to boundary pad and ball
+	DOUBLES_EQUAL(.25, b->y, NORM_MIN_DIFF); 
+
+	// changed by side spin
+	DOUBLES_EQUAL(.1 + SIDE_SPIN_FACTOR*p->v, b->vx, NORM_MIN_DIFF); 
+
+	// reversed by bounce
+	DOUBLES_EQUAL(-.2, b->vy, NORM_MIN_DIFF);
 
 	dispose_ball(b);
 }

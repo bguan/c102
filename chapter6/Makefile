@@ -55,7 +55,7 @@ run: $(BLD_DIR)/$(MAIN)
 	$(BLD_DIR)/$(MAIN) 
 
 test: $(BLD_DIR) $(TEST_BLD_DIR) $(ALL_TESTS)
-	for file in $(ALL_TESTS) ; do $$file ; done
+	for file in $(ALL_TESTS) ; do $$file -p -v ; done
 
 $(TEST_BLD_DIR)/%: $(TEST_SRC_DIR)/%.cpp $(NON_MAIN_OBJ) $(ALL_INC)
 	$(CPP) $(CPPFLAGS) $< $(NON_MAIN_OBJ) -o $@ $(TEST_LDFLAGS)

@@ -23,24 +23,16 @@
         "functional": "cpp",
         "utility": "cpp",
         "cstdio": "c",
-        "*.tcc": "c"
+        "*.tcc": "c",
+        "game.h": "c",
+        "string.h": "c",
+        "ctype.h": "c",
+        "_ctype.h": "c"
     },
     "makefile.launchConfigurations": [
         {
             "cwd": "/Users/bguan/git/c102/chapter6/build",
-            "binaryPath": "/Users/bguan/git/c102/chapter6/build/test-main",
-            "binaryArgs": []
-        },
-        {
-            "cwd": "/Users/bguan/git/c102/chapter6",
-            "binaryPath": "/Users/bguan/git/c102/chapter6/test_build/test_main",
-            "binaryArgs": [
-                "-v"
-            ]
-        },
-        {
-            "cwd": "/Users/bguan/git/c102/chapter6/test_build",
-            "binaryPath": "/Users/bguan/git/c102/chapter6/test_build/test_main",
+            "binaryPath": "/Users/bguan/git/c102/chapter6/build/main",
             "binaryArgs": []
         }
     ]

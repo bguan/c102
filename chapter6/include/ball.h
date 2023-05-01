@@ -6,7 +6,7 @@
 #include "console.h"
 #include "pad.h"
 
-#define BALL_COLOR YELLOW_ON_BLACK
+#define BALL_COLOR WHITE_ON_BLACK
 #define SIDE_SPIN_FACTOR 0.2
 
 typedef struct {
@@ -35,23 +35,13 @@ void update_ball(BALL* b, double elapse_secs);
 
 /**
  * Update BALL b's state given current pos and velocity if its touching
- * or beyond the top most limit e.g. touching ceiling or a top paddle.
+ * or beyond the boundary of the pad e.g. touching bottom line of top paddle.
  * Note that side_spin will be applied to ball's X velocity, applicable
  * if touching a moving paddle, or wanting to inject a little randomness
  * even when just bouncing off the ceiling.
  * Return true only if touching or exceeding.
  */
-bool bounce_if_touching_top_pad(BALL* b, PAD* p);
-
-/**
- * Update BALL b's state given current pos and velocity if its touching
- * or beyond the bottom most limit e.g. touching floor or a bottom paddle.
- * Note that side_spin will be applied to ball's X velocity, applicable
- * if touching a moving paddle, or wanting to inject a little randomness
- * even when just bouncing off the floor.
- * Return true only if touching or exceeding.
- */
-bool bounce_if_touching_bottom_pad(BALL* b, PAD* p);
+bool bounce_if_touching_pad(BALL* b, PAD* p);
 
 /**
  * Update BALL b's state given current pos and velocity if its touching

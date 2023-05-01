@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <math.h>
+#include <ctype.h>
 #include <string.h>
 
 #include "console.h"
@@ -21,6 +22,7 @@ void init_console()
 	init_pair(RED_ON_BLACK, COLOR_BLACK, COLOR_RED);
 	init_pair(GREEN_ON_BLACK, COLOR_BLACK, COLOR_GREEN);
 	init_pair(BLUE_ON_BLACK, COLOR_BLACK, COLOR_BLUE);
+	init_pair(WHITE_ON_BLACK, COLOR_BLACK, COLOR_WHITE);
 	init_pair(YELLOW_ON_BLACK, COLOR_BLACK, COLOR_YELLOW);
 
 	cbreak();
@@ -51,7 +53,7 @@ double get_dev_aspect()
 
 int key_pressed()
 {
-	return wgetch(stdscr);
+	return tolower(wgetch(stdscr));
 }
 
 double bound_x(double norm_x)
@@ -76,22 +78,24 @@ double bound_width(double norm_wth)
 
 int to_dev_x(double norm_x)
 {
-	return floor((bound_x(norm_x) + 0.5) * _console_width);
+	double dev_x = (bound_x(norm_x) + 0.5) * _console_width;
+	return round(dev_x);
 }
 
 int to_dev_y(double norm_y)
 {
-	return floor((bound_y(norm_y) + 0.5) * _console_height);
+	double dev_y = (bound_y(norm_y) + 0.5) * _console_height;
+	return round(dev_y);
 }
 
 unsigned int to_dev_width(double norm_x)
 {
-	return floor(bound_width(norm_x) * _console_width);
+	return round(bound_width(norm_x) * _console_width);
 }
 
 unsigned int to_dev_height(double norm_y)
 {
-	return floor(bound_height(norm_y) * _console_height);
+	return round(bound_height(norm_y) * _console_height);
 }
 
 /** marking text_area as weak to allow mocking */
@@ -203,4 +207,9 @@ void clear_area(double left_x, double top_y, double right_x, double bot_y)
 	{
 		mvprintw(y, dev_left_x, "%s", buffer);
 	}
+}
+
+void console_refresh()
+{
+	refresh();
 }

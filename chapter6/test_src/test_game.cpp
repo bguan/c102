@@ -54,17 +54,17 @@ TEST(GameTests, test_init_game)
 		.withDoubleParameter("bot_y", .5);
 
 	mock().expectOneCall("text_at")
-		.withStringParameter("txt", "My Score: 0.  Opponent: 0")
+		.withStringParameter("txt", "Game Over. Score 0 : 0")
 		.withDoubleParameter("x", 0.)
 		.withDoubleParameter("y", -.5)
-		.withIntParameter("c", GREEN_ON_BLACK)
+		.withIntParameter("c", MSG_COLOR)
 		.withIntParameter("align", TXT_CENTER);
 
 	mock().expectOneCall("text_at")
-		.withStringParameter("txt", "Game Over.  [SPACE] to start, [q] to quit")
+		.withStringParameter("txt", "[SPACE] start, [q] quit, [a] left, [s] stay, [d] right")
 		.withDoubleParameter("x", 0.)
 		.withDoubleParameter("y", .45)
-		.withIntParameter("c", GREEN_ON_BLACK)
+		.withIntParameter("c", MSG_COLOR)
 		.withIntParameter("align", TXT_CENTER);
 
 	GAME* g = init_game();
@@ -82,6 +82,12 @@ TEST(GameTests, test_init_game)
 	dispose_game(g);
 }
 
+TEST(GameTests, test_update_game_and_pause)
+{
+	GAME* g = init_game();
+	CHECK(g != NULL);
+	dispose_game(g);
+}
 
 int main(int ac, char** av)
 {

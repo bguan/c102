@@ -3,6 +3,7 @@
 #include <CppUTestExt/MockSupport.h>
 #include <ncurses.h>
 #include <stdarg.h>
+#include <math.h>
 #include <string.h>
 
 extern "C"
@@ -171,7 +172,7 @@ TEST(ConsoleTests, test_to_dev_x_multi_cases)
 	init_console();
 
 	int mid_dev_x = to_dev_x(0.0);
-	CHECK_EQUAL(_MOCK_COLS/2, mid_dev_x);
+	CHECK_EQUAL((int)round(_MOCK_COLS/2.0), mid_dev_x);
 
 	int left_dev_x = to_dev_x(-0.5);
 	CHECK_EQUAL(0, left_dev_x);
@@ -191,7 +192,7 @@ TEST(ConsoleTests, test_to_dev_y_multi_cases)
 	init_console();
 
 	int mid_dev_y = to_dev_y(0.0);
-	CHECK_EQUAL(_MOCK_LINES/2, mid_dev_y);
+	CHECK_EQUAL((int)round(_MOCK_LINES/2.0), mid_dev_y);
 
 	int top_dev_y = to_dev_y(-0.5);
 	CHECK_EQUAL(0, top_dev_y);
@@ -212,7 +213,7 @@ TEST(ConsoleTests, test_to_dev_width_multi_cases)
 	init_console();
 
 	int mid_dev_wth = to_dev_width(0.5);
-	CHECK_EQUAL(_MOCK_COLS/2, mid_dev_wth);
+	CHECK_EQUAL((int)round(_MOCK_COLS/2.0), mid_dev_wth);
 
 	int lo_dev_wth = to_dev_width(0);
 	CHECK_EQUAL(0, lo_dev_wth);
@@ -232,7 +233,7 @@ TEST(ConsoleTests, test_to_dev_height_multi_cases)
 	init_console();
 
 	int mid_dev_ht = to_dev_height(0.5);
-	CHECK_EQUAL(_MOCK_LINES/2, mid_dev_ht);
+	CHECK_EQUAL((int)round(_MOCK_LINES/2.0), mid_dev_ht);
 
 	int lo_dev_ht = to_dev_height(0);
 	CHECK_EQUAL(0, lo_dev_ht);
@@ -256,8 +257,8 @@ TEST(ConsoleTests, test_text_at_call_mvprintw)
 	mock().enable();
 
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", _MOCK_LINES/2).
-		withIntParameter("x", _MOCK_COLS/2).
+		withIntParameter("y", (int)round(_MOCK_LINES/2.0)).
+		withIntParameter("x", (int)round(_MOCK_COLS/2.0)).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
 	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, TXT_LEFT);
@@ -265,8 +266,8 @@ TEST(ConsoleTests, test_text_at_call_mvprintw)
 	mock().clear();
 
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", _MOCK_LINES/2).
-		withIntParameter("x", _MOCK_COLS/2 - len_hello/2).
+		withIntParameter("y", (int)round(_MOCK_LINES/2.0)).
+		withIntParameter("x", (int)round(_MOCK_COLS/2.0 - len_hello/2.0)).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
 	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, TXT_CENTER);
@@ -274,8 +275,8 @@ TEST(ConsoleTests, test_text_at_call_mvprintw)
 	mock().clear();
 
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", _MOCK_LINES/2).
-		withIntParameter("x", _MOCK_COLS/2 - len_hello).
+		withIntParameter("y", (int)round(_MOCK_LINES/2.0)).
+		withIntParameter("x", (int)round(_MOCK_COLS/2.0 - len_hello)).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", "hello");
 	text_at((char*)hello, 0., 0., BLUE_ON_BLACK, TXT_RIGHT);
@@ -290,8 +291,8 @@ TEST(ConsoleTests, test_rect_at_call_mvprintw_at_various_pos)
 	init_console();
 	mock().enable();
 	mock().expectOneCall("mvprintw").
-		withIntParameter("y", _MOCK_LINES/2).
-		withIntParameter("x", _MOCK_COLS/2).
+		withIntParameter("y", (int)round(_MOCK_LINES/2.0)).
+		withIntParameter("x", (int)round(_MOCK_COLS/2.0)).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", " ");
 	rect_at(0.1, 0.2, 0., 0., RED_ON_BLACK);
