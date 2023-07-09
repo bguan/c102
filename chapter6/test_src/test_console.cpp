@@ -292,7 +292,7 @@ TEST(ConsoleTests, test_rect_at_call_mvprintw_at_various_pos)
 	mock().enable();
 	mock().expectOneCall("mvprintw").
 		withIntParameter("y", (int)round(_MOCK_LINES/2.0)).
-		withIntParameter("x", (int)round(_MOCK_COLS/2.0)).
+		withIntParameter("x", (int)round(_MOCK_COLS/2.0) -1).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", " ");
 	rect_at(0.1, 0.2, 0., 0., RED_ON_BLACK);
@@ -301,7 +301,7 @@ TEST(ConsoleTests, test_rect_at_call_mvprintw_at_various_pos)
 
 	mock().expectOneCall("mvprintw").
 		withIntParameter("y", _MOCK_LINES).
-		withIntParameter("x", _MOCK_COLS).
+		withIntParameter("x", _MOCK_COLS -2).
 		withStringParameter("fmt", "%s").
 		withStringParameter("s", " ");
 	rect_at(0.1, 0.2, 1., 1., RED_ON_BLACK);

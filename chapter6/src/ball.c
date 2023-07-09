@@ -47,14 +47,10 @@ void update_ball(BALL *b, double elapsed_secs)
 		new_y = bound_y(b->y + b->vy * elapsed_secs);
 	}
 
-	// if there's meaningful diff btw old and new x y, clear & redraw
-	if (elapsed_secs < 0. || fabs(new_x - b->x) > NORM_MIN_DIFF || fabs(new_y - b->y) > NORM_MIN_DIFF)
-	{
-		clear_area(b->x - 2 * b->rad, b->y - 2 * b->rad, b->x + 2 * b->rad, b->y + 2 * b->rad);
-		b->x = new_x;
-		b->y = new_y;
-		circle_at(b->rad, b->x, b->y, BALL_COLOR);
-	}
+	clear_area(b->x - 2 * b->rad, b->y - 2 * b->rad, b->x + 2 * b->rad, b->y + 2 * b->rad);
+	b->x = new_x;
+	b->y = new_y;
+	circle_at(b->rad, b->x, b->y, BALL_COLOR);
 }
 
 bool bounce_if_touching_top_wall(BALL *b, double top_y)

@@ -5,17 +5,11 @@
 
 #include "console.h"
 
-static int _console_width = 0;
-static int _console_height = 0;
-static double _console_aspect = 0.0;
-
+/** marking init_console as weak to allow mocking */
+__attribute__((weak)) 
 void init_console()
 {
 	initscr();
-	_console_width = COLS;
-	_console_height = LINES;
-	_console_aspect = CONS_FONT_ASPECT * COLS / LINES;
-
 	start_color();
 
 	// initialize 3 color schemes: Circle, Rectangle, Text
@@ -32,25 +26,34 @@ void init_console()
 	curs_set(0);
 }
 
+/** marking end_console as weak to allow mocking */
+__attribute__((weak)) 
 void end_console() {
 	endwin();
 }
 
+/** marking get_dev_width as weak to allow mocking */
+__attribute__((weak)) 
 unsigned int get_dev_width()
 {
-	return _console_width;
+	return COLS;
 }
 
+/** marking get_dev_height as weak to allow mocking */
+__attribute__((weak)) 
 unsigned int get_dev_height()
 {
-	return _console_height;
+	return LINES;
 }
 
 double get_dev_aspect()
 {
-	return _console_aspect;
+	return CONS_FONT_ASPECT * COLS / LINES;
+	;
 }
 
+/** marking key_pressed as weak to allow mocking */
+__attribute__((weak)) 
 int key_pressed()
 {
 	return tolower(wgetch(stdscr));
@@ -78,27 +81,27 @@ double bound_width(double norm_wth)
 
 int to_dev_x(double norm_x)
 {
-	double dev_x = (bound_x(norm_x) + 0.5) * _console_width;
+	double dev_x = (bound_x(norm_x) + 0.5) * get_dev_width();
 	return round(dev_x);
 }
 
 int to_dev_y(double norm_y)
 {
-	double dev_y = (bound_y(norm_y) + 0.5) * _console_height;
+	double dev_y = (bound_y(norm_y) + 0.5) * get_dev_height();
 	return round(dev_y);
 }
 
 unsigned int to_dev_width(double norm_x)
 {
-	return round(bound_width(norm_x) * _console_width);
+	return round(bound_width(norm_x) * get_dev_width());
 }
 
 unsigned int to_dev_height(double norm_y)
 {
-	return round(bound_height(norm_y) * _console_height);
+	return round(bound_height(norm_y) * get_dev_height());
 }
 
-/** marking text_area as weak to allow mocking */
+/** marking text_at as weak to allow mocking */
 __attribute__((weak)) 
 void text_at(char *str, double x, double y, CONS_COLOR c, CONS_TXT_ALIGN align)
 {
@@ -127,7 +130,7 @@ void repeat_char(char * buffer, char c, int num)
 __attribute__((weak))
 void circle_at(double radius, double x, double y, CONS_COLOR c)
 {
-	int rad_x = to_dev_width(radius) / _console_aspect;
+	int rad_x = to_dev_width(radius) / get_dev_aspect();
 	int rad_y = to_dev_height(radius);
 	int dev_x = to_dev_x(x);
 	int dev_y = to_dev_y(y);
@@ -135,7 +138,7 @@ void circle_at(double radius, double x, double y, CONS_COLOR c)
 	double a_squared = rad_x * rad_x;
 	double b_squared = rad_y * rad_y;
 	bool too_small = rad_x < 3 || rad_y < 3;
-	char buffer[_console_width + 1];
+	char buffer[get_dev_width() + 1];
 	attron(COLOR_PAIR(c));
 	for (int dy = -rad_y; dy < rad_y; dy++)
 	{
@@ -170,7 +173,16 @@ void rect_at(double width, double height, double x, double y, CONS_COLOR c)
 	int dev_y = to_dev_y(bound_y(y));
 	int dev_w = to_dev_width(bound_width(width));
 	int dev_h = to_dev_height(bound_height(height));
-	char buffer[_console_width + 1];
+
+	int dev_left = dev_x - .5*dev_w;
+	if (dev_left < 0)
+		dev_left = 0;
+
+	int dev_right = dev_x + .5 * dev_w;
+	if (dev_right >= COLS)
+		dev_left = COLS - dev_w -1;
+
+	char buffer[get_dev_width() + 1];
 	repeat_char((char*)&buffer, ' ', dev_w);
 	attron(COLOR_PAIR(c));
 	for (
@@ -179,7 +191,7 @@ void rect_at(double width, double height, double x, double y, CONS_COLOR c)
 		dy++
 	)
 	{
-		mvprintw(dy, dev_x-dev_w/2, "%s", buffer);
+		mvprintw(dy, dev_left, "%s", buffer);
 	}
 	attroff(COLOR_PAIR(c));
 }
@@ -198,7 +210,7 @@ void clear_area(double left_x, double top_y, double right_x, double bot_y)
 	int dev_left_x = to_dev_x(bound_x(left_x));
 	int dev_right_x = to_dev_x(bound_x(right_x));
 
-	char buffer[_console_width + 1];
+	char buffer[get_dev_width() + 1];
 	repeat_char((char *)&buffer, ' ', dev_right_x - dev_left_x);
 
 	int dev_top_y = to_dev_y(bound_y(top_y));
@@ -209,6 +221,8 @@ void clear_area(double left_x, double top_y, double right_x, double bot_y)
 	}
 }
 
+/** marking console_refresh as weak to allow mocking */
+__attribute__((weak)) 
 void console_refresh()
 {
 	refresh();

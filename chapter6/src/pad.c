@@ -40,6 +40,7 @@ void dispose_pad(PAD *p)
 	free(p);
 }
 
+
 void update_pad(PAD *p, double elapsed_secs)
 {
 	if (p == NULL)
@@ -51,20 +52,11 @@ void update_pad(PAD *p, double elapsed_secs)
 		new_x += p->v * elapsed_secs;
 	}
 
-	// if elapsed_secs negative force redraw or if
-	// there's meaningful diff btw old and new x, clear & redraw
-	if (elapsed_secs < 0. || fabs(new_x - p->x) > NORM_MIN_DIFF)
-	{
-		clear_area(p->x - p->w, p->y - p->h, p->x + p->w, p->y + p->h);
-		p->x = bound_x(new_x);
+	// clear twice the width and height to make sure no trails from rounding error
+	clear_area(p->x - p->w, p->y - p->h, p->x + p->w, p->y + p->h);
+	p->x = bound_x(new_x);
 
-		if (p->x - p->w / 1.5 < -.5)
-			p->x = -.5 + p->w / 1.5;
-		else if (p->x + p->w / 1.5 > .5)
-			p->x = .5 - p->w / 1.5;
-
-		rect_at(p->w, p->h, p->x, p->y, pick_color(p));
-	}
+	rect_at(p->w, p->h, p->x, p->y, pick_color(p));
 }
 
 void pad_stop(PAD *p)

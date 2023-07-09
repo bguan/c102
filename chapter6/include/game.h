@@ -15,6 +15,10 @@
 #define KEY_STAY_PUT 's'
 #define KEY_GO_RIGHT 'd'
 
+#define DEFAULT_PAUSE 0.002 // default pause 2 millisec after every update so game loop not eat up too much CPU
+#define EXTENDED_PAUSE 2.0 // a longer pause after a score
+#define END_OF_GAME_PAUSE -1.0 // a special value to signify end of game
+
 #define BALL_SIZE 0.025
 #define BALL_INIT_SPEED 0.333
 #define PAD_WIDTH 0.15
@@ -36,8 +40,14 @@ typedef struct {
 GAME* init_game();
 
 /**
+ * @brief check if game is over
+ * @return true iff game is over
+ */
+bool is_over(GAME *g);
+
+/**
  * @brief move the state of the game by elapsed seconds, incl detecting key press, and drawing.
- * 
+ *
  * @return the recommended amount of seconds to pause until next update.  If negative, quit game.
  */
 double update_game_and_pause(GAME* g, double elapsed_secs);

@@ -85,7 +85,7 @@ TEST(PadTests, test_dispose_pad_calls_clear_area)
 	mock().disable();
 }
 
-TEST(PadTests, test_update_pad_stationary_stays_same_spot_no_draw)
+TEST(PadTests, test_update_pad_stationary_stays_same_spot)
 {
 	PAD* p = init_pad(.2, .1, -.4, .4, 0.);
 
@@ -97,8 +97,18 @@ TEST(PadTests, test_update_pad_stationary_stays_same_spot_no_draw)
 	DOUBLES_EQUAL(0., p->v, NORM_MIN_DIFF);
 
 	mock().enable();
-	mock().expectNoCall("clear_area");
-	mock().expectNoCall("rect_at");
+	mock().expectOneCall("clear_area")
+		.withDoubleParameter("left_x", p->x - p->w)
+		.withDoubleParameter("top_y", p->y - p->h)
+		.withDoubleParameter("right_x", p->x + p->w)
+		.withDoubleParameter("bot_y", p->y + p->h);
+
+	mock().expectOneCall("rect_at")
+		.withDoubleParameter("w", p->w)
+		.withDoubleParameter("h", p->h)
+		.withDoubleParameter("x", p->x)
+		.withDoubleParameter("y", p->y)
+		.withIntParameter("c", BOT_PAD_COLOR);
 
 	// 100 secs elapsed, update pad state
 	update_pad(p, 100.);
@@ -116,7 +126,7 @@ TEST(PadTests, test_update_pad_stationary_stays_same_spot_no_draw)
 	dispose_pad(p);
 }
 
-TEST(PadTests, test_update_pad_moved_to_expected_spot_calls_clear_and_rect_at)
+TEST(PadTests, test_update_pad_moved_to_expected_spot)
 {
 	PAD* p = init_pad(.1, .1, 0., .4, PAD_SPEED);
 
@@ -130,16 +140,16 @@ TEST(PadTests, test_update_pad_moved_to_expected_spot_calls_clear_and_rect_at)
 	mock().enable();
 
 	mock().expectOneCall("clear_area")
-		.withDoubleParameter("left_x", -.1)
-		.withDoubleParameter("top_y", .4 - .1)
-		.withDoubleParameter("right_x", .1)
-		.withDoubleParameter("bot_y", .4 + .1);
+		.withDoubleParameter("left_x", p->x - p->w)
+		.withDoubleParameter("top_y", p->y - p->h)
+		.withDoubleParameter("right_x", p->x + p->w)
+		.withDoubleParameter("bot_y", p->y + p->h);
 
 	mock().expectOneCall("rect_at")
-		.withDoubleParameter("w", .1)
-		.withDoubleParameter("h", .1)
-		.withDoubleParameter("x", PAD_SPEED - p->w/1.5)
-		.withDoubleParameter("y", .4)
+		.withDoubleParameter("w", p->w)
+		.withDoubleParameter("h", p->h)
+		.withDoubleParameter("x", PAD_SPEED)
+		.withDoubleParameter("y", p->y)
 		.withIntParameter("c", BOT_PAD_COLOR);
 
 	update_pad(p, 1.);
@@ -149,15 +159,16 @@ TEST(PadTests, test_update_pad_moved_to_expected_spot_calls_clear_and_rect_at)
 
 	DOUBLES_EQUAL(.1, p->w, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.1, p->h, NORM_MIN_DIFF);
-	DOUBLES_EQUAL(0. + PAD_SPEED * 1.0 - p->w/1.5, p->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(0. + PAD_SPEED*1.0, p->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(0.4, p->y, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(PAD_SPEED, p->v, NORM_MIN_DIFF);
 
+	// but another update pad is already at rightmost limit, so stuck at 0.5
 	update_pad(p, 1.);
-
+	
 	DOUBLES_EQUAL(.1, p->w, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.1, p->h, NORM_MIN_DIFF);
-	DOUBLES_EQUAL(.5 - p->w/1.5, p->x, NORM_MIN_DIFF);
+	DOUBLES_EQUAL(0.5, p->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(0.4, p->y, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(PAD_SPEED, p->v, NORM_MIN_DIFF);
 

@@ -87,13 +87,23 @@ TEST(BallTests, test_dispose_ball_calls_clear_area)
 }
 
 
-TEST(BallTests, test_update_ball_stationary_stays_same_spot_no_draw)
+TEST(BallTests, test_update_ball_stationary_stays_same_spot)
 {
 	BALL* b = init_ball(.01, .0, .0, .0, .0);
 
 	mock().enable();
-	mock().expectNoCall("clear_area");
-	mock().expectNoCall("circle_at");
+	mock().expectOneCall("clear_area")
+		.withDoubleParameter("left_x", -.02)
+		.withDoubleParameter("top_y", -.02)
+		.withDoubleParameter("right_x", .02)
+		.withDoubleParameter("bot_y", .02);
+
+	mock().expectOneCall("circle_at")
+		.withDoubleParameter("rad", 0.01)
+		.withDoubleParameter("x", .0)
+		.withDoubleParameter("y", .0)
+		.withIntParameter("c", BALL_COLOR);
+		
 	update_ball(b, 100.);
 	DOUBLES_EQUAL(.0, b->x, NORM_MIN_DIFF);
 	DOUBLES_EQUAL(.0, b->y, NORM_MIN_DIFF);

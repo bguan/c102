@@ -78,13 +78,13 @@ void start_game(GAME *g)
 	g->my_score = 0;
 	g->oppo_score = 0;
 	g->ball->x = 0.;
-	g->ball->y = -0.3;
+	g->ball->y = 0;
 	g->ball->vy = BALL_INIT_SPEED;
 	g->ball->vx = 0.;
 	g->my_pad->x = 0.;
-	g->my_pad->v = PAD_SPEED * 0.5; // give some speed to force redraw
+	g->my_pad->v = 0; 
 	g->oppo_pad->x = 0.;
-	g->oppo_pad->v = PAD_SPEED * 0.5; // give some speed to force redraw
+	g->oppo_pad->v = 0; 
 }
 
 bool is_over(GAME *g)
@@ -100,7 +100,7 @@ double update_game_and_pause(GAME *g, double elapsed_secs)
 	if (g == NULL)
 		exit(1);
 
-	double pause = 0.002; // default to pausing 2 millisec after every update
+	double pause = DEFAULT_PAUSE; // default pause after every update
 
 	if (elapsed_secs <= 0)
 		return pause;
@@ -108,7 +108,7 @@ double update_game_and_pause(GAME *g, double elapsed_secs)
 	char c = key_pressed();
 	if (c == KEY_QUIT_GAME)
 	{
-		return -1.0;
+		return END_OF_GAME_PAUSE;
 	}
 
 	if (is_over(g))
@@ -117,7 +117,8 @@ double update_game_and_pause(GAME *g, double elapsed_secs)
 		{
 			console_beep();
 			start_game(g);
-			pause = 1.0;
+			elapsed_secs = -1.0; // to force redraw
+			pause = EXTENDED_PAUSE;
 		}
 		else
 		{
@@ -143,6 +144,7 @@ double update_game_and_pause(GAME *g, double elapsed_secs)
 			g->ball->vx = 0.;
 
 			clear_area(-.5, -.5, .5, .5);
+			// force update and redraw of ball & pads
 			update_ball(g->ball, -1.);
 			update_pad(g->my_pad, -1.);
 			update_pad(g->oppo_pad, -1.);
@@ -159,6 +161,7 @@ double update_game_and_pause(GAME *g, double elapsed_secs)
 			g->ball->vx = 0.;
 
 			clear_area(-.5, -.5, .5, .5);
+			// force update and redraw of ball & pads
 			update_ball(g->ball, -1.);
 			update_pad(g->my_pad, -1.);
 			update_pad(g->oppo_pad, -1.);
@@ -187,11 +190,11 @@ double update_game_and_pause(GAME *g, double elapsed_secs)
 		sprintf((char *)msg, "Score %d : %d", g->my_score, g->oppo_score);
 		text_at((char *)msg, 0., -.5, MSG_COLOR, TXT_CENTER);
 
-		sprintf((char *)msg, "Dim: %d x %d", get_dev_width(), get_dev_height());
-		text_at((char *)msg, -.5, -.5, MSG_COLOR, TXT_LEFT);
-
-		sprintf((char *)msg, "Interval: %.9f", elapsed_secs);
-		text_at((char *)msg, .5, -.5, MSG_COLOR, TXT_RIGHT);
+		// uncomment only for debugging...
+		// sprintf((char *)msg, "Dim: %d x %d", get_dev_width(), get_dev_height());
+		// text_at((char *)msg, -.5, -.5, MSG_COLOR, TXT_LEFT);
+		// sprintf((char *)msg, "Interval: %.9f", elapsed_secs);
+		// text_at((char *)msg, .5, -.5, MSG_COLOR, TXT_RIGHT);
 	}
 
 	return pause;
