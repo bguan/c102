@@ -1,0 +1,41 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+    "files.associations": {
+        "console.h": "c",
+        "test_console.cpp": "cpp",
+        "ncurses.h": "c",
+        "time.h": "c",
+        "math.h": "c",
+        "sstream": "c",
+        "__hash_table": "cpp",
+        "__tree": "cpp",
+        "__tuple": "cpp",
+        "array": "cpp",
+        "chrono": "cpp",
+        "compare": "cpp",
+        "cstddef": "cpp",
+        "type_traits": "cpp",
+        "limits": "cpp",
+        "random": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp",
+        "variant": "cpp",
+        "functional": "cpp",
+        "utility": "cpp",
+        "cstdio": "c",
+        "*.tcc": "c",
+        "game.h": "c",
+        "string.h": "c",
+        "ctype.h": "c",
+        "_ctype.h": "c",
+        "pad.h": "c",
+        "ball.h": "c"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/Users/bguan/git/c102/chapter6/build",
+            "binaryPath": "/Users/bguan/git/c102/chapter6/build/main",
+            "binaryArgs": []
+        }
+    ]
+}
